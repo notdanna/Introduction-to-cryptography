@@ -28,7 +28,6 @@ int main(){
             cout << "Elige un valor de Z estrella: ";
             printV(zstar_r);
             cout << "Dame un valor!: "; cin >> a;
-
             b = aminusone(n, a);
             cout << "Yo te doy un b!: "<< b << "\n";
             break;

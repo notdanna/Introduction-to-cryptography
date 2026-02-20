@@ -19,16 +19,6 @@ int gcd(int a, int b){
     return result;
 }
 
-vector<int> zStar(int n){
-    
-    vector<int> zs;
-    
-    for (int i = 1; i <= n - 1; i++)
-        if (gcd(n,i)==1) zs.push_back(i);
-
-    return zs;
-}
-
 int aminusone(int n, int a){
     int vmax = 0, vmin = 0, quotient = 0, reminder = 0, temp_k = 0, iter = 0;
     vector<int> S = {1,0}, T = {0,1};
@@ -81,3 +71,14 @@ int aminusone(int n, int a){
     return ( Re[0] == a) ? S.back() : T.back();
 
 }
+
+vector<int> zStar(int n){
+    
+    vector<int> zs;
+    
+    for (int i = 1; i <= n - 1; i++)
+        if (gcd(n,i)==1) zs.push_back(i);
+
+    return zs;
+}
+
