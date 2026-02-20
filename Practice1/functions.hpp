@@ -72,6 +72,7 @@ int aminusone(int n, int a){
     // Agregar el 0 del reminder
     Re.push_back(0);
 
+    /*
     // Caso 1
     S.push_back(Qu[1] * no * S[1] + S[0]);
     T.push_back(Qu[1] * no * T[1] + T[0]);
@@ -79,9 +80,10 @@ int aminusone(int n, int a){
     // Caso 2
     S.push_back(Qu[2] * no * S[2] + S[1]);
     T.push_back(Qu[2] * no * T[2] + T[1]);
-
+    */
+    // Los casos 1 y 2 ya no son casos especiales porque está lleno el vector de S y T.
     // Caso 3 hasta la última iteración
-    for (int i = 2; i <= iter; i++){
+    for (int i = 0; i <= iter; i++){
         S.push_back(Qu[i + 1] * no * S[i + 1] + S[i]);
         T.push_back(Qu[i + 1] * no * T[i + 1] + T[i]);
     }
