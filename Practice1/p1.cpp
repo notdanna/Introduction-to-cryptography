@@ -4,8 +4,7 @@ using namespace std;
 int main(){
     int option, n, a, b, gcd_r = 0;
     vector<int> zstar_r(n);
-    cout << "Elige el número de ejercicio: "; 
-    cin >> option;
+    cout << "Elige el número de ejercicio: "; cin >> option;
 
     switch(option){
 
