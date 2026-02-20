@@ -4,14 +4,10 @@ using namespace std;
 
 void printV(const vector<int>& v) {
     cout << "[";
-    for (size_t i = 0; i < v.size(); ++i) {
-        cout << v[i] << (i < v.size() - 1 ? ", " : "");
-    }
+    for (size_t i = 0; i < v.size(); ++i) cout << v[i] << (i < v.size() - 1 ? ", " : "");
     cout << "]" << endl;
 }
 
-
-// GCD
 int gcd(int a, int b){
     int vmin, result = 0;
 
@@ -23,7 +19,6 @@ int gcd(int a, int b){
     return result;
 }
 
-// Z^*
 vector<int> zStar(int n){
     
     vector<int> zs;
@@ -34,19 +29,17 @@ vector<int> zStar(int n){
     return zs;
 }
 
-// a^-1 = b
 int aminusone(int n, int a){
-    int vmax, vmin, quotient, reminder, temp_k, iter = 0;
-    int const no = -1;
+    int vmax = 0, vmin = 0, quotient = 0, reminder = 0, temp_k = 0, iter = 0;
+    vector<int> S = {1,0}, T = {0,1};
     vector<int> i_epoch, Re, Qu;
-    vector<int> S = {1,0};
-    vector<int> T = {0,1};
 
     vmax = (a < n) ? n : a;
     vmin = (a < n) ? a : n;
 
-    quotient = floor (vmax/vmin); 
-    reminder = vmax - (vmin*quotient);
+    quotient = floor(vmax/vmin); 
+    // vmax + vmin * quotient == vmax % quotient
+    reminder = vmax % quotient;
 
     i_epoch.push_back(iter);
     Re.push_back(vmax);      
@@ -72,20 +65,11 @@ int aminusone(int n, int a){
     // Agregar el 0 del reminder
     Re.push_back(0);
 
-    /*
-    // Caso 1
-    S.push_back(Qu[1] * no * S[1] + S[0]);
-    T.push_back(Qu[1] * no * T[1] + T[0]);
-
-    // Caso 2
-    S.push_back(Qu[2] * no * S[2] + S[1]);
-    T.push_back(Qu[2] * no * T[2] + T[1]);
-    */
     // Los casos 1 y 2 ya no son casos especiales porque está lleno el vector de S y T.
     // Caso 3 hasta la última iteración
     for (int i = 0; i <= iter; i++){
-        S.push_back(Qu[i + 1] * no * S[i + 1] + S[i]);
-        T.push_back(Qu[i + 1] * no * T[i + 1] + T[i]);
+        S.push_back(Qu[i + 1] * (-1) * S[i + 1] + S[i]);
+        T.push_back(Qu[i + 1] * (-1) * T[i + 1] + T[i]);
     }
 
     // Imprimir la pseudomatriz:)
