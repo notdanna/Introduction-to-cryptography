@@ -131,6 +131,7 @@ vector<int> kGeneration(int n)
 void affineCipher(string filename)
 {
     // El modulo seria del tamaño del alfabeto? 126 - 32 = 94
+    // (a * x + b) mod m
     int const modulo = 94;
     int a = 0, b = 0;
     vector<int> key;
@@ -139,24 +140,54 @@ void affineCipher(string filename)
     key = kGeneration(modulo);
     a = key[0], b = key[1];
     map<int, char> asciiCharacterMap = getASCIIDictionary();
-    // (a * x + b) mod m
 
-    string plaintext = "hello";
+    /*
+    string plaintext = "oso";
     string ciphertext = "";
 
     // un for (a : b) es un foreach
     for (char c : plaintext)
     {
-
         // Para inicar en 0
         int x = static_cast<int>(c) - 32;
 
-        int encrypted_val = (a * x + b) % modulo;                        // Formuloca
-        ciphertext = ciphertext + asciiCharacterMap[encrypted_val + 32]; // Convertir de nuevo a carácter y agregar al resultado
+        // Formuloca
+        int encrypted_val = (a * x + b) % modulo;
+        // Para ir agregando cada caracte, como el pushback pero para string
+        ciphertext = ciphertext + asciiCharacterMap[encrypted_val + 32];
         // if (encrypted_val < 0) encrypted_val += modulo;
     }
 
-    cout << "\n"
-         << "Text: " << plaintext << endl;
+    cout << "\n" << "Text: " << plaintext << endl;
     cout << "Cifred: " << ciphertext << endl;
+    */
+
+    // Para agarrar obtener el archivo se usa ifstream
+    ifstream inputFile(filename);
+    ofstream outputFile("cifred_" + filename);
+
+    char c;
+    // noskipws evita que ignore los espacios en blanco
+    while (inputFile >> noskipws >> c)
+    {
+        if (c == '\n')
+        {
+            outputFile << c;
+        }
+        else
+        {
+            int x = static_cast<int>(c) - 32;
+
+            int encrypted_val = (a * x + b) % modulo;
+            if (encrypted_val < 0)
+                encrypted_val += modulo;
+
+            char encrypted_char = static_cast<char>(encrypted_val + 32);
+
+            outputFile << encrypted_char;
+        }
+    }
+
+    inputFile.close();
+    outputFile.close();
 }

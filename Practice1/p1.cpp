@@ -5,6 +5,7 @@ using namespace std;
 
 int main(){
     int option, n, a, b, gcd_r = 0;
+    string filename = "";
     
     /*
     map<int, char> ascii_dict;
@@ -14,23 +15,14 @@ int main(){
     }
     cout << "\n";
     */
-
-
-
-    string filename = "hello";
-    affineCipher(filename);
     
-
-
-
-
-
 
     vector<int> zstar_r(n);
     cout << "\n" << "Podemos hacer las siguientes operaciones:" << "\n";
     cout << "1: Calcular el gcd de valores a y b: " << "\n";
     cout << "2: Calcular el Z* estrella de un valor n: " << "\n";
     cout << "3: Calcular el inverso de un valor a en Z* de n: " << "\n";
+    cout << "4: Cifrar un archivo con el cifrado afín: " << "\n";
     cout << "Elige: "; cin >> option;
 
     switch(option){
@@ -58,6 +50,11 @@ int main(){
             b = aminusone(n, a);
             cout << "Yo te doy un b!: "<< b << "\n";
             break;
+
+        case 4:
+            cout << "Dame el nombre del archivo!: ";
+            cin >> filename;
+            affineCipher(filename);
 
     }
     return 0;
