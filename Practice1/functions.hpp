@@ -1,11 +1,24 @@
-#include <iostream>
-#include <vector>
 using namespace std;
+
+map<int, char> getASCIIDictionary() {
+    map<int, char> ascii_dict;
+    for (int i = 32; i <= 126; ++i) {
+        // Este metodo transforma el numero actual en su caracter ascii
+        ascii_dict[i] = static_cast<char>(i);
+        cout << ascii_dict[i] << ", ";
+    }
+    return ascii_dict;
+}
 
 void printV(const vector<int>& v) {
     cout << "[";
     for (size_t i = 0; i < v.size(); ++i) cout << v[i] << (i < v.size() - 1 ? ", " : "");
     cout << "]" << endl;
+}
+
+int randomV(int min, int max) {
+    static std::mt19937 gen(std::random_device{}());
+    return std::uniform_int_distribution<int>{min, max}(gen);
 }
 
 int gcd(int a, int b){
@@ -75,10 +88,34 @@ int aminusone(int n, int a){
 vector<int> zStar(int n){
     
     vector<int> zs;
-    
+ 
     for (int i = 1; i <= n - 1; i++)
         if (gcd(n,i)==1) zs.push_back(i);
 
     return zs;
 }
 
+vector<int> kGeneration(int n){
+  vector<int> tmp, val;
+  int a, b;
+  tmp = zStar(n);
+  
+  // Revisar
+  a = randomV(1, tmp.size());
+  b = randomV(0, n);
+
+  val.push_back(a);
+  val.push_back(b);
+  
+
+  cout << "a: " << a << "\n" << "b: " << b << "\n";
+
+  return val;
+}
+
+void affineCipher(string filename, vector<int> key){
+  // El modulo seria del tamaño del alfabeto? 126 - 32 = 94
+  int const modulo = 94;
+  map<int, char> asciiCharacterMap = getASCIIDictionary(); 
+  
+}
