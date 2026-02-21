@@ -14,16 +14,11 @@ int main(){
     }
     cout << "\n";
     */
-    vector<int> key;
-    int var = 12;
-    key = kGeneration(var);
-    printV(key);
+
 
 
     string filename = "hello";
-    key = {1,2}; 
-
-    affineCipher(filename, key);
+    affineCipher(filename);
     
 
 
