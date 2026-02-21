@@ -168,24 +168,23 @@ void affineCipher(string filename)
 
     char c;
     // noskipws evita que ignore los espacios en blanco
+    // La condicion del while está implicita, si no hay más caracteres, el while se detiene
     while (inputFile >> noskipws >> c)
     {
         if (c == '\n')
         {
             outputFile << c;
+            continue;
         }
-        else
-        {
-            int x = static_cast<int>(c) - 32;
+        int x = static_cast<int>(c) - 32;
 
-            int encrypted_val = (a * x + b) % modulo;
-            if (encrypted_val < 0)
-                encrypted_val += modulo;
+        int encrypted_val = (a * x + b) % modulo;
+        if (encrypted_val < 0)
+            encrypted_val += modulo;
 
-            char encrypted_char = static_cast<char>(encrypted_val + 32);
+        char encrypted_char = static_cast<char>(encrypted_val + 32);
 
-            outputFile << encrypted_char;
-        }
+        outputFile << encrypted_char;
     }
 
     inputFile.close();

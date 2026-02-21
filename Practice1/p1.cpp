@@ -16,7 +16,6 @@ int main(){
     cout << "\n";
     */
     
-
     vector<int> zstar_r(n);
     cout << "\n" << "Podemos hacer las siguientes operaciones:" << "\n";
     cout << "1: Calcular el gcd de valores a y b: " << "\n";
