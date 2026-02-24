@@ -49,8 +49,9 @@ int aminusone(int n, int a)
     vmin = (a < n) ? a : n;
 
     quotient = floor(vmax / vmin);
-    // vmax + vmin * quotient == vmax % quotient
-    reminder = vmax % quotient;
+    // vmax - vmin * quotient == vmax % quotient
+
+    reminder = vmax - vmin * quotient;
 
     i_epoch.push_back(iter);
     Re.push_back(vmax);
@@ -91,8 +92,19 @@ int aminusone(int n, int a)
         cout << "i: " << i_epoch[i] << " Re: " << Re[i] << " Qu: " << Qu[i] << " S: " << S[i] << " T: " << T[i] << "\n";
     }
 
-    // Si "a" está en Re[0] entonces regresar S[iter], si no, regresar T[iter]
-    return (Re[0] == a) ? S.back() : T.back();
+    // Si "a" está en Re[0] entonces regresar S[iter], si no, regresar T[iter], pero en positivo.
+
+    int inverse = (Re[0] == a) ? S.back() : T.back();
+
+    if (inverse < 0)
+    {
+        // - 11 mod 28 = 28 - (-(-11)mod 28) = 28 - (11 mod 28)
+        return n - ((-inverse) % n);
+    }
+    else
+    {
+        return inverse;
+    }
 }
 
 vector<int> zStar(int n)
@@ -113,11 +125,9 @@ vector<int> kGeneration(int n)
     int a, b;
     tmp = zStar(n);
 
-    // Revisar
-    // a = randomV(1, tmp.size());
-    // vamos a una posicion aleatoria de zStar y la ponemos en a
+    // Ir a una posicion aleatoria de zStar y la ponemos en a
     a = tmp[randomV(0, tmp.size() - 1)];
-    b = randomV(0, n);
+    b = randomV(0, n - 1);
 
     val.push_back(a);
     val.push_back(b);
@@ -130,16 +140,16 @@ vector<int> kGeneration(int n)
 
 void affineCipher(string filename)
 {
-    // El modulo seria del tamaño del alfabeto? 126 - 32 = 94
+    // El modulo seria del tamaño del alfabeto? 126 - 32 + 1 = 95
     // (a * x + b) mod m
-    int const modulo = 94;
+    int const modulo = 95;
     int a = 0, b = 0;
     vector<int> key;
 
-    // generación de clave aleatoria
+    // Generación de clave aleatoria
     key = kGeneration(modulo);
     a = key[0], b = key[1];
-    map<int, char> asciiCharacterMap = getASCIIDictionary();
+    // map<int, char> asciiCharacterMap = getASCIIDictionary();
 
     /*
     string plaintext = "oso";
@@ -148,7 +158,8 @@ void affineCipher(string filename)
     // un for (a : b) es un foreach
     for (char c : plaintext)
     {
-        // Para inicar en 0
+        // Para iniciar en (0 a 94)
+        // Estamos en 32 al 126 => 32 - 32 = 0
         int x = static_cast<int>(c) - 32;
 
         // Formuloca
@@ -162,15 +173,16 @@ void affineCipher(string filename)
     cout << "Cifred: " << ciphertext << endl;
     */
 
-    // Para agarrar obtener el archivo se usa ifstream
+    // Para obtener el archivo se usa ifstream
     ifstream inputFile(filename);
-    ofstream outputFile("cifred_" + filename);
+    ofstream outputFile("ct_" + filename);
 
     char c;
     // noskipws evita que ignore los espacios en blanco
     // La condicion del while está implicita, si no hay más caracteres, el while se detiene
     while (inputFile >> noskipws >> c)
     {
+        // Para no cifrar el salto de línea
         if (c == '\n')
         {
             outputFile << c;
@@ -179,12 +191,60 @@ void affineCipher(string filename)
         int x = static_cast<int>(c) - 32;
 
         int encrypted_val = (a * x + b) % modulo;
-        if (encrypted_val < 0)
-            encrypted_val += modulo;
 
         char encrypted_char = static_cast<char>(encrypted_val + 32);
 
         outputFile << encrypted_char;
+    }
+
+    inputFile.close();
+    outputFile.close();
+}
+
+void affineDecipher(string filename, int a, int b)
+{
+    int const modulo = 95;
+    int deciphered_val = 0;
+    char c;
+
+    ifstream inputFile(filename);
+    ofstream outputFile("pt_" + filename);
+
+    // Sacamos el inverso de a y lo ponemos en a jeje
+    a = aminusone(modulo, a);
+    cout << a;
+
+    while (inputFile >> noskipws >> c)
+    {
+
+        // Para no descifrar el salto de línea
+        if (c == '\n')
+        {
+            outputFile << c;
+            continue;
+        }
+
+        int x = static_cast<int>(c) - 32;
+
+        // int val = ((x - b) * a) % modulo;
+        // if (val < 0) val += modulo;
+
+        
+        if (x - b < 0)
+        {   
+            //((0-3) * 15) mod 26 = (-3*15) mod 26 = -45 mod 26 = 26 - (45 mod 26)
+            deciphered_val = modulo - (((-(x - b)) * a)  % modulo);
+
+        } else {
+            deciphered_val = ((x - b) * a) % modulo;
+        }
+        
+        // deciphered_val = val;
+
+
+        char deciphered_char = static_cast<char>(deciphered_val + 32);
+
+        outputFile << deciphered_char;
     }
 
     inputFile.close();

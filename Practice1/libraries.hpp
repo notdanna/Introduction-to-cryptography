@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
-
 #include <map>
 #include <random>
 #include <string>
+
+// Para archivos
 #include <fstream>
