@@ -42,8 +42,9 @@ int gcd(int a, int b)
 int aminusone(int n, int a)
 {
     int vmax = 0, vmin = 0, quotient = 0, reminder = 0, temp_k = 0, iter = 0;
-    vector<int> S = {1, 0}, T = {0, 1};
-    vector<int> i_epoch, Re, Qu;
+    vector<int> S = {1, 0}, T = {0, 1}, Qu = {0};
+    vector<int> i_epoch, Re;
+    int inverse = 0;
 
     vmax = (a < n) ? n : a;
     vmin = (a < n) ? a : n;
@@ -55,7 +56,7 @@ int aminusone(int n, int a)
 
     i_epoch.push_back(iter);
     Re.push_back(vmax);
-    Qu.push_back(0);
+    // Qu.push_back(0);
     Qu.push_back(quotient);
 
     iter = 1;
@@ -80,7 +81,7 @@ int aminusone(int n, int a)
 
     // Los casos 1 y 2 ya no son casos especiales porque está lleno el vector de S y T.
     // Caso 3 hasta la última iteración
-    for (int i = 0; i <= iter; i++)
+    for (int i = 0; i <= iter - 2; i++)
     {
         S.push_back(Qu[i + 1] * (-1) * S[i + 1] + S[i]);
         T.push_back(Qu[i + 1] * (-1) * T[i + 1] + T[i]);
@@ -93,8 +94,7 @@ int aminusone(int n, int a)
     }
 
     // Si "a" está en Re[0] entonces regresar S[iter], si no, regresar T[iter], pero en positivo.
-
-    int inverse = (Re[0] == a) ? S.back() : T.back();
+    inverse = (Re[0] == a) ? S.back() : T.back();
 
     if (inverse < 0)
     {
@@ -229,18 +229,17 @@ void affineDecipher(string filename, int a, int b)
         // int val = ((x - b) * a) % modulo;
         // if (val < 0) val += modulo;
 
-        
         if (x - b < 0)
-        {   
+        {
             //((0-3) * 15) mod 26 = (-3*15) mod 26 = -45 mod 26 = 26 - (45 mod 26)
-            deciphered_val = modulo - (((-(x - b)) * a)  % modulo);
-
-        } else {
+            deciphered_val = modulo - (((-(x - b)) * a) % modulo);
+        }
+        else
+        {
             deciphered_val = ((x - b) * a) % modulo;
         }
-        
-        // deciphered_val = val;
 
+        // deciphered_val = val;
 
         char deciphered_char = static_cast<char>(deciphered_val + 32);
 
