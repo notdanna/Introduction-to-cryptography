@@ -1,0 +1,1 @@
+4 8 15 16 23 42... !}Es 14 el inverso de 34 mod 95? {Respuesta: 14 * 34 = 476; 476 % 95 = 1}. !_Correcto!

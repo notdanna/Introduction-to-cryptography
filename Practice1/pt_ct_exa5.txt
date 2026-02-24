@@ -1,0 +1,1 @@
+void* ptr = &data[0]; /* !}Qu"g pasa con las comillas? */ while(*ptr != '\0') { printf("Val: %d", (int)*ptr++); } // #1234567890

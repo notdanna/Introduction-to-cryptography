@@ -13,9 +13,9 @@ int main(){
     cout << "[1]: Calcular el gcd de valores a y b: " << "\n";
     cout << "[2]: Calcular el Z* estrella de un valor n: " << "\n";
     cout << "[3]: Calcular el inverso de un valor a en Z* de n: " << "\n";
-    cout << "[4]: Generar llaves válidas: " << "\n";
-    cout << "[5]: Cifrar un archivo con el cifrado afín: " << "\n";
-    cout << "[6]: Descifrar un archivo con el descifrado afín: " << "\n";
+    cout << "[4]: Generar llaves v"_lidas: " << "\n";
+    cout << "[5]: Cifrar un archivo con el cifrado af"kn: " << "\n";
+    cout << "[6]: Descifrar un archivo con el decifrado af"kn: " << "\n";
     cout << "Elige: "; cin >> option;
 
     switch(option){
@@ -42,7 +42,6 @@ int main(){
             cout << "Dame un valor!: "; cin >> a;
             b = aminusone(n, a);
             cout << "Yo te doy un b!: "<< b << "\n";
-            cout << "ab mod n: " << (a * b) % n << "\n";
             break;
 
         case 4:

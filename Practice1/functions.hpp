@@ -51,7 +51,6 @@ int aminusone(int n, int a)
 
     quotient = floor(vmax / vmin);
     // vmax - vmin * quotient == vmax % quotient
-
     reminder = vmax - vmin * quotient;
 
     i_epoch.push_back(iter);
@@ -140,44 +139,21 @@ vector<int> kGeneration(int n)
 
 void affineCipher(string filename)
 {
-    // El modulo seria del tamaño del alfabeto? 126 - 32 + 1 = 95
-    // (a * x + b) mod m
+    // El modulo seria del tamaño del alfabeto:  126 - 32 + 1 = 95
+    // (a * x + b) mod n
     int const modulo = 95;
     int a = 0, b = 0;
+    char c;
     vector<int> key;
 
     // Generación de clave aleatoria
     key = kGeneration(modulo);
     a = key[0], b = key[1];
-    // map<int, char> asciiCharacterMap = getASCIIDictionary();
-
-    /*
-    string plaintext = "oso";
-    string ciphertext = "";
-
-    // un for (a : b) es un foreach
-    for (char c : plaintext)
-    {
-        // Para iniciar en (0 a 94)
-        // Estamos en 32 al 126 => 32 - 32 = 0
-        int x = static_cast<int>(c) - 32;
-
-        // Formuloca
-        int encrypted_val = (a * x + b) % modulo;
-        // Para ir agregando cada caracte, como el pushback pero para string
-        ciphertext = ciphertext + asciiCharacterMap[encrypted_val + 32];
-        // if (encrypted_val < 0) encrypted_val += modulo;
-    }
-
-    cout << "\n" << "Text: " << plaintext << endl;
-    cout << "Cifred: " << ciphertext << endl;
-    */
 
     // Para obtener el archivo se usa ifstream
     ifstream inputFile(filename);
     ofstream outputFile("ct_" + filename);
 
-    char c;
     // noskipws evita que ignore los espacios en blanco
     // La condicion del while está implicita, si no hay más caracteres, el while se detiene
     while (inputFile >> noskipws >> c)
@@ -204,7 +180,7 @@ void affineCipher(string filename)
 void affineDecipher(string filename, int a, int b)
 {
     int const modulo = 95;
-    int deciphered_val = 0;
+    int decrypted_val = 0;
     char c;
 
     ifstream inputFile(filename);
@@ -212,12 +188,12 @@ void affineDecipher(string filename, int a, int b)
 
     // Sacamos el inverso de a y lo ponemos en a jeje
     a = aminusone(modulo, a);
-    cout << a;
+    cout << "a^-1 mod n: " << a << "\n";
 
     while (inputFile >> noskipws >> c)
     {
 
-        // Para no descifrar el salto de línea
+        // Para no tomar en cuenta el salto de línea
         if (c == '\n')
         {
             outputFile << c;
@@ -229,21 +205,19 @@ void affineDecipher(string filename, int a, int b)
         // int val = ((x - b) * a) % modulo;
         // if (val < 0) val += modulo;
 
+        
         if (x - b < 0)
         {
             //((0-3) * 15) mod 26 = (-3*15) mod 26 = -45 mod 26 = 26 - (45 mod 26)
-            deciphered_val = modulo - (((-(x - b)) * a) % modulo);
+            decrypted_val = modulo - (((-(x - b)) * a)  % modulo);
+
+        } else {
+            decrypted_val = ((x - b) * a) % modulo;
         }
-        else
-        {
-            deciphered_val = ((x - b) * a) % modulo;
-        }
 
-        // deciphered_val = val;
+        char decrypted_char = static_cast<char>(decrypted_val + 32);
 
-        char deciphered_char = static_cast<char>(deciphered_val + 32);
-
-        outputFile << deciphered_char;
+        outputFile << decrypted_char;
     }
 
     inputFile.close();

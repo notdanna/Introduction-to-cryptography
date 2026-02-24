@@ -213,3 +213,31 @@ int aminusone(int n, int a){
         return T.back();
     }
 }
+
+// Todo lo de abajo estaba comentado en affine
+// map<int, char> asciiCharacterMap = getASCIIDictionary();
+
+    /*
+    string plaintext = "oso";
+    string ciphertext = "";
+
+    // un for (a : b) es un foreach
+    for (char c : plaintext)
+    {
+        // Para iniciar en (0 a 94)
+        // Estamos en 32 al 126 => 32 - 32 = 0
+        int x = static_cast<int>(c) - 32;
+
+        // Formuloca
+        int encrypted_val = (a * x + b) % modulo;
+        // Para ir agregando cada caracte, como el pushback pero para string
+        ciphertext = ciphertext + asciiCharacterMap[encrypted_val + 32];
+        // if (encrypted_val < 0) encrypted_val += modulo;
+    }
+
+    cout << "\n" << "Text: " << plaintext << endl;
+    cout << "Cifred: " << ciphertext << endl;
+    */
+
+
+    
