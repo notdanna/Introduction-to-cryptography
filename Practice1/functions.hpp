@@ -95,8 +95,7 @@ int aminusone(int n, int a)
     // Si "a" está en Re[0] entonces regresar S[iter], si no, regresar T[iter], pero en positivo.
     inverse = (Re[0] == a) ? S.back() : T.back();
 
-    if (inverse < 0)
-    {
+    if (inverse < 0){
         // - 11 mod 28 = 28 - (-(-11)mod 28) = 28 - (11 mod 28)
         return n - ((-inverse) % n);
     }
