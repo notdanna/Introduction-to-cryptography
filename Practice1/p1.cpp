@@ -1,5 +1,4 @@
-#include "libraries.hpp"
-#include "functions.hpp"
+#include "../functions.hpp"
 using namespace std;
 
 
