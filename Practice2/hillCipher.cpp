@@ -59,10 +59,10 @@ int main()
         break;
 
     case 4:
-        cout << "Dame un archivo a cifrar!: ";   
+        cout << "Dame un archivo a cifrar! ";   
         cin >> filename;
         M = readFile(filename);
-        cout << "Dame la llave de Hill (4 enteros):! \n";
+        cout << "Dame la llave de Hill! \n";
         cin >> Key.k[0][0] >> Key.k[0][1] >> Key.k[1][0] >> Key.k[1][1];
         encrypted = hillCipher(M, Key);
         output.open("ciph.txt");
@@ -71,10 +71,10 @@ int main()
         break;
 
     case 5:
-        cout << "Dame un archivo a descifrar!: ";   
+        cout << "Dame un archivo a descifrar! ";   
         cin >> filename;
         C = readFile(filename);
-        cout << "Dame tu llave de Hill!: ";
+        cout << "Dame tu llave de Hill! \n";
         cin >> Key.k[0][0] >> Key.k[0][1] >> Key.k[1][0] >> Key.k[1][1];
         hillDeciphered(C, Key);
         break;
@@ -241,14 +241,14 @@ string hillCipher(string M, matriz2x2 key)
         int p2 = M[i+1] - 32;
 
         // Multiplicación de matriz: C = K * P
-        int m1 = (key.k[0][0] * p1 + key.k[0][1] * p2) % modulo;
-        int m2 = (key.k[1][0] * p1 + key.k[1][1] * p2) % modulo;
+        int m1 = (key.k[0][0] * p1 + key.k[1][0] * p2) % modulo;
+        int m2 = (key.k[0][1] * p1 + key.k[1][1] * p2) % modulo;
 
         // Normalización de negativos
         if (m1 < 0 || m2 < 0)
         {
-            m1 = modulo - ((-(p1 * key.k[0][0] + p2 * key.k[0][1])) % modulo);
-            m2 = modulo - ((-(p2 * key.k[1][0] + p2 * key.k[1][1])) % modulo);
+            m1 = modulo - ((-(p1 * key.k[0][0] + p2 * key.k[1][0])) % modulo);
+            m2 = modulo - ((-(p1 * key.k[0][1] + p2 * key.k[1][1])) % modulo);
         }
 
 
