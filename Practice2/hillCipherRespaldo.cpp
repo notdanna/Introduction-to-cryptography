@@ -1,3 +1,4 @@
+/*
 #include "../functions.hpp"
 
 using namespace std;
@@ -91,7 +92,18 @@ string readFile(string filename) {
     ifstream file(filename, ios::binary);
     stringstream buffer;
     buffer << file.rdbuf();
-    return buffer.str();
+    string content = buffer.str();
+    
+    for (char& c : content){
+        int i;
+        vector<int> linebreaks = {};
+        if (c == '\n') {
+            c = '|'; // Reemplazamos el salto de línea por un carácter especial
+            //linebreaks.push_back(i); // Guardamos la posición del salto de línea
+        }
+    }
+    
+    return content;
 }
 
 
@@ -217,39 +229,17 @@ string hillCipher(string M, matriz2x2 key)
 {
     
     int const modulo = 95;
-    char segundo;
     string res = "";
 
-    // if (M.size() % 2 != 0) M += ' '; // Rellenamos con espacio si el mensaje tiene longitud impar
+    if (M.size() % 2 != 0) M += ' '; // Padding con espacio si el mensaje tiene longitud impar
 
     cout << "Pares (p1, p2) -> Indices (m1, m2) -> Caracteres\n";
 
-    //for (int i = 0; i < M.size(); i += 2)
-    //{
-        //int p1 = M[i] - 32;
-        //int p2 = M[i+1] - 32;
-    for (int i = 0; i < M.size(); i++)
+    for (int i = 0; i < M.size(); i += 2)
     {
-        // Si es salto de linea, lo mantenemos sin cifrar y continuamos
-        if (M[i] == '\n'){
-            res += '\n';
-            continue;
-        }
 
-        // Caracter 1 (se mantiene como lo teniamos antes)
         int p1 = M[i] - 32;
-
-        if (i + 1 >= M.size() || M[i + 1] == '\n')
-        {
-            segundo = ' '; // Rellenamos con espacio si no hay pareja o si hay salto de línea
-        }
-        else
-        {
-            segundo = M[i + 1];
-            i++; // consumimos la posicion para iniciar en [2] en el for (skipeamos el siguiente carácter)
-        }
-        // Caracter 2
-        int p2 = segundo - 32;
+        int p2 = M[i+1] - 32;
 
         // Multiplicación de matriz: C = K * P
         int m1 = (key.k[0][0] * p1 + key.k[1][0] * p2) % modulo;
@@ -282,11 +272,16 @@ string hillDeciphered(string C, matriz2x2 key) {
     matriz2x2 inverse = kminusone(95, key);
     string decrypted = hillCipher(C, inverse);
 
+    for (char& c : decrypted) 
+        if (c == '|') c = '\n';
+
     cout << "Resultado final: " << decrypted << "\n";
     
     ofstream output("deciph.txt");
-    output << decrypted; 
+    output << decrypted; // Ahora guarda el resultado real
     output.close();
 
     return decrypted;
 }
+
+*/
