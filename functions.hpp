@@ -394,7 +394,7 @@ string hillCipher(string M, matriz2x2 key)
 
         if (i + 1 >= M.size() || M[i + 1] == '\n')
         {
-            segundo = ' '; // Rellenamos con espacio si no hay pareja o si hay salto de línea
+            segundo = 'X'; // Rellenamos con espacio si no hay pareja o si hay salto de línea
         }
         else
         {

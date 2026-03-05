@@ -1,5 +1,5 @@
 int inverseM(int n, int a)
-{ 
+{X
     int a_0, b_0, t_0, t, q, r, temp, res;
     a_0 = n;
     b_0 = a;
@@ -8,18 +8,18 @@ int inverseM(int n, int a)
     q = a_0 / b_0;
     r = a_0 - q * b_0;
 
-    while (r > 0) 
-    { 
-        temp = t_0 - q * t; 
-        if (temp < 0) 
-        { 
+    while (r > 0)X
+    {X
+        temp = t_0 - q * t;X
+        if (temp < 0)X
+        {X
 
             res = n - ((-temp) % n);
-        } 
+        }X
         else
-        { 
-            res = temp % n; 
-        } 
+        {X
+            res = temp % n;X
+        }X
 
         t_0 = t;
         t = res;
@@ -29,13 +29,13 @@ int inverseM(int n, int a)
 
         q = a_0 / b_0;
         r = a_0 - q * b_0;
-    } 
+    }X
 
-    if (b_0 != 1) 
-    { 
+    if (b_0 != 1)X
+    {X
         cout << "No existe el inverso multiplicativo de " << a << " en Z*" << n << "\n";
-        return 0; 
-    } 
+        return 0;X
+    }X
     else
-        return res; 
-} 
+        return res;X
+}X
