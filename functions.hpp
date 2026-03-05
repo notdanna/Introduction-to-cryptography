@@ -443,3 +443,41 @@ string hillDeciphered(string C, matriz2x2 key) {
 
     return decrypted;
 }
+
+
+
+// ----------------------
+// Práctica 3
+// ----------------------
+
+
+vector<int> pi(int n){
+    vector<int> PI;
+    // PI.reserve(n);
+	vector<bool> X(n, false);
+
+    do {
+        int m = randomV(1, n);
+        if (X[m - 1] == false){
+            PI.push_back(m);
+            X[m - 1] = true;
+        }
+
+    } while(PI.size() < n);
+
+    return PI;
+
+}
+
+vector<int> piInverse(vector<int> perm){
+    int n = perm.size();
+    vector<int> inverse(n);
+    // inverse.reserve(n);
+    for (int i = 0; i <= n-1; i++){
+        int posix = perm[i];
+        inverse[posix - 1] = i + 1;
+    }
+
+
+    return inverse;
+}
