@@ -481,3 +481,72 @@ vector<int> piInverse(vector<int> perm){
 
     return inverse;
 }
+
+
+
+string encipherPerm(string m, vector<int> PI){
+    
+    vector<char> mV (m.begin(), m.end());
+    int lenMess = m.size();
+    int lenPerm = PI.size();
+
+    string ciph = "";
+
+    if (lenMess % lenPerm != 0){
+        // residuo = 16 % 5 = 1
+        int residuo = lenMess % lenPerm;
+        // completeo = 5 - 1 = 4
+        int completeo = lenPerm - residuo;
+        
+        for (int i = 0; i < completeo; i++){
+            // para char es con un "_"
+            mV.push_back('X');
+        }
+        lenMess = lenMess + completeo;
+    }
+
+    int inicioBloque = 0;
+    while (inicioBloque < lenMess){
+
+        for (int i = 0; i < lenPerm; i++){
+            int posix = PI[i];
+            char caracter = mV[inicioBloque + (posix - 1)];
+            ciph += caracter;
+        }
+
+        inicioBloque = inicioBloque + lenPerm;
+    }
+
+    cout << ciph << "\n";
+    return ciph;
+
+}
+
+
+
+string decipherPerm(string c, vector<int> PI){
+    
+    vector<int> inverse = piInverse(PI);
+    vector<char> cV (c.begin(), c.end());
+    int lenMess = c.size();
+    int lenPerm = PI.size();
+
+    string plain = "";
+
+    int inicioBloque = 0;
+    while (inicioBloque < lenMess){
+
+        for (int i = 0; i < lenPerm; i++){
+            int posix = inverse[i];
+            char caracter = cV[inicioBloque + (posix - 1)];
+            plain += caracter;
+        }
+
+        inicioBloque = inicioBloque + lenPerm;
+    }
+
+    cout << plain << "\n";
+    return plain;
+
+}
+
