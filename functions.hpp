@@ -517,12 +517,9 @@ string encipherPerm(string m, vector<int> PI){
         inicioBloque = inicioBloque + lenPerm;
     }
 
-    cout << ciph << "\n";
     return ciph;
 
 }
-
-
 
 string decipherPerm(string c, vector<int> PI){
     
@@ -545,7 +542,6 @@ string decipherPerm(string c, vector<int> PI){
         inicioBloque = inicioBloque + lenPerm;
     }
 
-    cout << plain << "\n";
     return plain;
 
 }
