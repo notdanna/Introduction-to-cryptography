@@ -20,8 +20,8 @@ def generate_key(length=8):
     print("\nClave en bytes: ", end="")
     print(key_binary)
 
-    print("\nClave codificada en base 64: ", end="")
     key_b64 = encode_to_base64(key)
+    print(f"\nClave codificada en base 64: {key_b64}")
 
     return key_binary
 
@@ -60,7 +60,7 @@ def cipher_file(filename, key):
     cifrado_b64 = encode_to_base64(cifrado)
 
     salida = "Ciphertext_" + filename
-    with open(salida, "wb") as f:
+    with open(salida, "w") as f:
         f.write(cifrado_b64)
 
 
@@ -85,23 +85,23 @@ def decipher_file(filename, key):
 
 
 def main():
-    # Codificar un mensaje a binario, luego a base64 y mostrar el resultado
-    encode_to_base64("Hola Mundo")
-
-    # Decodificar un mensaje de base64 a binario y mostrar el resultado
-    decode_from_base64("SG9sYSBNdW5kbw==")
-    print("\n")
     
-    # Generar una clave de 64 bits y mostrarla en binario y en base64
-    generate_key()
-    # Cifrar
-    key = b'8bytekey' # Pedirla al usuario  en vez de fija 
-    archivo_cifrado = cipher_file("mensaje.txt", key)
-    print("Cifrado en:", archivo_cifrado)
-
-    # Descifrar 
-    archivo_descifrado = decipher_file(archivo_cifrado, key)
-    print("Descifrado en:", archivo_descifrado)
+    match input("Elija una opción:\n1. Generar clave\n2. Cifrar un archivo\n3. Descifrar un archivo\n"):
+        case "1":
+            generate_key()
+        case "2":
+            key_b64 = input("Ingrese la clave en Base64: ")
+            key = decode_from_base64(key_b64)
+            archivo_cifrado = cipher_file("mensaje.txt", key)
+            print("Cifrado en:", archivo_cifrado)
+        case "3":
+            key_b64 = input("Ingrese la clave en Base64: ")
+            key = decode_from_base64(key_b64)
+            archivo_descifrado = decipher_file("Ciphertext_mensaje.txt", key)
+            print("Descifrado en:", archivo_descifrado)
+        case _:
+            print("Opción no válida")
+    
     
 if __name__ == "__main__":
     main()
