@@ -211,13 +211,13 @@ void affineDecipher(string filename, int a, int b)
         // int val = ((x - b) * a) % modulo;
         // if (val < 0) val += modulo;
 
-        
         if (x - b < 0)
         {
             //((0-3) * 15) mod 26 = (-3*15) mod 26 = -45 mod 26 = 26 - (45 mod 26)
-            decrypted_val = modulo - (((-(x - b)) * a)  % modulo);
-
-        } else {
+            decrypted_val = modulo - (((-(x - b)) * a) % modulo);
+        }
+        else
+        {
             decrypted_val = ((x - b) * a) % modulo;
         }
 
@@ -239,14 +239,13 @@ struct matriz2x2
     int k[2][2];
 };
 
-
-string readFile(string filename) {
+string readFile(string filename)
+{
     ifstream file(filename, ios::binary);
     stringstream buffer;
     buffer << file.rdbuf();
     return buffer.str();
 }
-
 
 int inverseM(int n, int a)
 {
@@ -365,10 +364,9 @@ matriz2x2 kminusone(int n, matriz2x2 Key)
     return K_inv;
 }
 
-
 string hillCipher(string M, matriz2x2 key)
 {
-    
+
     int const modulo = 95;
     char segundo;
     string res = "";
@@ -377,14 +375,15 @@ string hillCipher(string M, matriz2x2 key)
 
     cout << "Pares (p1, p2) -> Indices (m1, m2) -> Caracteres\n";
 
-    //for (int i = 0; i < M.size(); i += 2)
+    // for (int i = 0; i < M.size(); i += 2)
     //{
-        //int p1 = M[i] - 32;
-        //int p2 = M[i+1] - 32;
+    // int p1 = M[i] - 32;
+    // int p2 = M[i+1] - 32;
     for (int i = 0; i < M.size(); i++)
     {
         // Si es salto de linea, lo mantenemos sin cifrar y continuamos
-        if (M[i] == '\n'){
+        if (M[i] == '\n')
+        {
             res += '\n';
             continue;
         }
@@ -415,10 +414,8 @@ string hillCipher(string M, matriz2x2 key)
             m2 = modulo - ((-(p1 * key.k[0][1] + p2 * key.k[1][1])) % modulo);
         }
 
-
         char c1 = static_cast<char>(m1 + 32);
         char c2 = static_cast<char>(m2 + 32);
-
 
         // Print limpio en una sola línea por par
         cout << "(" << p1 << ", " << p2 << ") \t-> (" << m1 << ", " << m2 << ") \t-> [" << c1 << c2 << "]\n";
@@ -426,79 +423,81 @@ string hillCipher(string M, matriz2x2 key)
         res += c1;
         res += c2;
     }
-    
+
     cout << "Resultado final: " << res << "\n";
-    return res; 
+    return res;
 }
 
-string hillDeciphered(string C, matriz2x2 key) {
+string hillDeciphered(string C, matriz2x2 key)
+{
     matriz2x2 inverse = kminusone(95, key);
     string decrypted = hillCipher(C, inverse);
 
     cout << "Resultado final: " << decrypted << "\n";
-    
+
     ofstream output("deciph.txt");
-    output << decrypted; 
+    output << decrypted;
     output.close();
 
     return decrypted;
 }
 
-
-
 // ----------------------
 // Práctica 3
 // ----------------------
 
-
-vector<int> pi(int n){
+vector<int> pi(int n)
+{
     vector<int> PI;
     // PI.reserve(n);
-	vector<bool> X(n, false);
+    vector<bool> X(n, false);
 
-    do {
+    do
+    {
         int m = randomV(1, n);
-        if (X[m - 1] == false){
+        if (X[m - 1] == false)
+        {
             PI.push_back(m);
             X[m - 1] = true;
         }
 
-    } while(PI.size() < n);
+    } while (PI.size() < n);
 
     return PI;
-
 }
 
-vector<int> piInverse(vector<int> perm){
+vector<int> piInverse(vector<int> perm)
+{
     int n = perm.size();
     vector<int> inverse(n);
     // inverse.reserve(n);
-    for (int i = 0; i <= n-1; i++){
+    for (int i = 0; i <= n - 1; i++)
+    {
         int posix = perm[i];
         inverse[posix - 1] = i + 1;
     }
 
-
     return inverse;
 }
 
+string encipherPerm(string m, vector<int> PI)
+{
 
-
-string encipherPerm(string m, vector<int> PI){
-    
-    vector<char> mV (m.begin(), m.end());
+    vector<char> mV(m.begin(), m.end());
     int lenMess = m.size();
     int lenPerm = PI.size();
 
     string ciph = "";
 
-    if (lenMess % lenPerm != 0){
+    if (lenMess % lenPerm != 0)
+    {
         // residuo = 16 % 5 = 1
         int residuo = lenMess % lenPerm;
         // completeo = 5 - 1 = 4
         int completeo = lenPerm - residuo;
-        
-        for (int i = 0; i < completeo; i++){
+
+        for (int i = 0; i < completeo; i++)
+        {
             // para char es con un "_"
             mV.push_back('X');
         }
@@ -506,9 +505,11 @@ string encipherPerm(string m, vector<int> PI){
     }
 
     int inicioBloque = 0;
-    while (inicioBloque < lenMess){
+    while (inicioBloque < lenMess)
+    {
 
-        for (int i = 0; i < lenPerm; i++){
+        for (int i = 0; i < lenPerm; i++)
+        {
             int posix = PI[i];
             char caracter = mV[inicioBloque + (posix - 1)];
             ciph += caracter;
@@ -518,22 +519,24 @@ string encipherPerm(string m, vector<int> PI){
     }
 
     return ciph;
-
 }
 
-string decipherPerm(string c, vector<int> PI){
-    
+string decipherPerm(string c, vector<int> PI)
+{
+
     vector<int> inverse = piInverse(PI);
-    vector<char> cV (c.begin(), c.end());
+    vector<char> cV(c.begin(), c.end());
     int lenMess = c.size();
     int lenPerm = PI.size();
 
     string plain = "";
 
     int inicioBloque = 0;
-    while (inicioBloque < lenMess){
+    while (inicioBloque < lenMess)
+    {
 
-        for (int i = 0; i < lenPerm; i++){
+        for (int i = 0; i < lenPerm; i++)
+        {
             int posix = inverse[i];
             char caracter = cV[inicioBloque + (posix - 1)];
             plain += caracter;
@@ -543,11 +546,151 @@ string decipherPerm(string c, vector<int> PI){
     }
 
     return plain;
-
 }
-
 
 // ----------------------
 // Práctica 5
 // ----------------------
 
+// Warm up:
+void warmingExercise()
+{
+    // 1 Exercise
+    unsigned char data = 'K';
+
+    printf("1) Initial value\n");
+    printf("Character: %c\n", data);
+    printf("Hexadecimal: 0x%X\n", data);
+    printf("Integer: %u\n\n", data);
+
+    // 2 Exercise LSHIFT
+    printf("2) Left shift\n");
+    for (int i = 0; i < 8; i++)
+    {
+        data = data << 1;
+        printf("Shift %d\n", i + 1);
+        printf("Character: %c\n", data);
+        printf("Hexadecimal: 0x%X\n", data);
+        printf("Integer: %u\n\n", data);
+    }
+
+    // 3 Exercise RSHIFT
+    data = 'A';
+    printf("3) Right shift\n");
+    for (int i = 0; i < 8; i++)
+    {
+        data = data >> 1;
+        printf("Shift %d\n", i + 1);
+        printf("Character: %c\n", data);
+        printf("Hexadecimal: 0x%X\n", data);
+        printf("Integer: %u\n\n", data);
+    }
+
+    // 4 Exercise - bitwise AND, OR, XOR
+    unsigned char v1 = 'D'; // 0x44 = 68
+    unsigned char v2 = 'M'; // 0x4D = 77
+
+    unsigned char result_and = v1 & v2;
+    unsigned char result_or = v1 | v2;
+    unsigned char result_xor = v1 ^ v2;
+
+    printf("4) Bitwise operations\n");
+    printf("v1 = %c -> 0x%X -> %u\n", v1, v1, v1);
+    printf("v2 = %c -> 0x%X -> %u\n\n", v2, v2, v2);
+
+    printf("AND: 0x%X -> %u\n", result_and, result_and);
+    printf("OR : 0x%X -> %u\n", result_or, result_or);
+    printf("XOR: 0x%X -> %u\n\n", result_xor, result_xor);
+
+    // 5 Exercise - obtain most significant bit
+    unsigned char data2 = 'R'; // 0x52 = 01010010
+    unsigned char mask = 0x80; // 10000000
+    unsigned char result = data2 & mask;
+
+    printf("5) Most significant bit\n");
+    printf("data2 = %c -> 0x%X -> %u\n", data2, data2, data2);
+    printf("Mask  = 0x%X\n", mask);
+    printf("Result: 0x%X -> %u\n\n", result, result);
+
+    // 6 Exercise - obtain 4 least significant bits
+    data2 = 'V'; // 0x56 = 01010110
+    mask = 0x0F; // 00001111
+    result = data2 & mask;
+
+    printf("6) Four least significant bits\n");
+    printf("data2 = %c -> 0x%X -> %u\n", data2, data2, data2);
+    printf("Mask  = 0x%X\n", mask);
+    printf("Result: 0x%X -> %u\n", result, result);
+}
+
+unsigned int getNthBit(unsigned int num, unsigned int n)
+{
+    // uint8_t es un entero de 8 bits
+    // Si n = 0, no hacemos nada a la mascara
+    unsigned int mask = 1;
+
+    // Si n >= 1, hacemos left shift n veces
+    for (int i = 1; i <= n; i++)
+        mask = mask << 1;
+
+    // if ((num & mask) == 0){
+    //     cout << "El bit " << n << " es 0\n";
+    // } else {
+    //     cout << "El bit " << n << " es 1\n";
+    // }
+
+    // Si es != de 0 es true, si es == 0 es false
+    cout << "El bit " << n << " es: " << (((num & mask)) ? 1 : 0) << endl;
+
+    return (num & mask) ? 1 : 0;
+}
+
+unsigned int setNthBit(unsigned int num, unsigned int n)
+{
+    // uint8_t es un entero de 8 bits
+    unsigned int bin = 0;
+    // Si n = 0, no hacemos nada a la mascara
+    unsigned int mask = 1;
+
+    // Si n >= 1, hacemos left shift n veces
+    for (int i = 1; i <= n; i++)
+        mask = mask << 1;
+
+    bin = (num | mask);
+
+    // Representación binaria
+    bitset<32> numbere(num);
+    bitset<32> answere(bin);
+
+    cout << endl
+         << "Posición del bit a modificar: " << n;
+    cout << endl
+         << "El nuevo entero es: " << bin;
+    cout << endl
+         << "Número original: " << numbere << endl
+         << "Numero modificado: " << answere;
+    return (num | mask);
+}
+
+unsigned int countLeadingZeros(unsigned int num)
+{
+    int counter = 0;
+    unsigned int isOne = 0;
+    unsigned int modifiedNum = num;
+
+    isOne = getNthBit(modifiedNum, 31);
+
+    while (isOne == 0)
+    {
+        modifiedNum = modifiedNum << 1;
+        counter++;
+        isOne = getNthBit(modifiedNum, 31);
+    }
+
+    // Representación binaria
+    bitset<32> rawNumber(num);
+
+    cout << "Número original: " << rawNumber << endl;
+    cout << "Cantidad de ceros:" << counter;
+    return counter;
+}
