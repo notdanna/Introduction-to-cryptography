@@ -639,6 +639,9 @@ unsigned int getNthBit(unsigned int num, unsigned int n)
     //     cout << "El bit " << n << " es 1\n";
     // }
 
+    // Representación binaria
+    bitset<32> rawNumber(num);
+    cout << "Número en binario: " << rawNumber << endl;
     // Si es != de 0 es true, si es == 0 es false
     cout << "El bit " << n << " es: " << (((num & mask)) ? 1 : 0) << endl;
 
