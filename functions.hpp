@@ -683,6 +683,9 @@ unsigned int countLeadingZeros(unsigned int num)
 
     isOne = getNthBit(modifiedNum, 31);
 
+    if (num == 0)
+        return 32;
+
     while (isOne == 0)
     {
         modifiedNum = modifiedNum << 1;
