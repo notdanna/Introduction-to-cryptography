@@ -4,10 +4,9 @@ using namespace std;
 
 
 int main(){
-  
-  vector<char> ans;
-  ans = tableSubstitution();
-
+  int n = 3;
+  vector<unsigned int> ans;
+  ans =  functionS(n);
 
 
 }

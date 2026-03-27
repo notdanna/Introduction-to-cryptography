@@ -26,13 +26,11 @@ void printV(const vector<int> &v)
     cout << "]" << endl;
 }
 
-
 int randomV(int min, int max)
 {
     static std::mt19937 gen(std::random_device{}());
     return std::uniform_int_distribution<int>{min, max}(gen);
 }
-
 
 int gcd(int a, int b)
 {
@@ -703,33 +701,95 @@ unsigned int countLeadingZeros(unsigned int num)
     return counter;
 }
 
+// ----------------------
+// Práctica 6
+// ----------------------
 
-vector<char> tableSubstitution(){
-  vector<char> S;
-  vector<char> hexA = {
-    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
-  };
-   vector<bool> X(hexA.size(), false);
-  
-  do {
+vector<char> tableSubstitution()
+{
+    vector<char> S;
+    vector<char> hexA = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'};
+    vector<bool> X(hexA.size(), false);
+
+    do
+    {
 
         int pos = randomV(0, hexA.size() - 1);
         if (X[pos] == false)
         {
-            S.push_back(hexA[pos]); 
+            S.push_back(hexA[pos]);
             X[pos] = true;
         }
-    
-  } while(hexA.size() != S.size());
 
+    } while (hexA.size() != S.size());
 
-  for (char c : hexA)
-    cout << c << " ";
+    for (char c : hexA)
+        cout << c << " ";
     cout << endl;
 
-  for (char k : S)
-    cout << k << " ";
+    for (char k : S)
+        cout << k << " ";
 
+    return S;
+}
 
-  return S;
+string binaryRep(unsigned int num, int bits)
+{
+    string r = "";
+    for (int i = bits - 1; i >= 0; i--)
+        r += ((num >> i) & 1) ? '1' : '0';
+    return r;
+}
+
+vector<unsigned int> functionS(int n)
+{
+    vector<unsigned int> z;
+    vector<unsigned int> S;
+
+    //l = 2^n -> todas las combinaciones posibles de tamaño n
+    int l = 1 << n;  // 0000 0001 -> 0000 0100 / 0000 1000 / 0001 0000 / 0010 0000
+
+    // Llenar el vector con las combinaciones posibles de cadenas 
+    for (int i = 0; i < l; i++)
+    {
+        z.push_back(i);
+    }
+
+    vector<bool> X(z.size(), false);
+
+    do
+    {
+
+        int pos = randomV(0, z.size() - 1);
+        if (X[pos] == false)
+        {
+            S.push_back(z[pos]);
+            X[pos] = true;
+        }
+
+    } while (z.size() != S.size());
+    
+
+    cout << "Representación enteros" << endl;
+    cout << "z: " ;
+    for (unsigned int c : z)
+        cout << c << " ";
+    cout << endl;
+    
+    cout << "S: " ;
+    for (unsigned int k : S)
+        cout << k << " ";
+
+    cout << endl << "Representación binaria" << endl;
+    cout << "z: ";
+    for (unsigned int c : z)
+        cout << binaryRep(c, n) << " ";
+    cout << endl;
+
+    cout << "S: ";
+    for (unsigned int k : S)
+        cout << binaryRep(k, n) << " ";
+    cout << endl;
+
+    return S;
 }
