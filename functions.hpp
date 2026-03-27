@@ -26,11 +26,13 @@ void printV(const vector<int> &v)
     cout << "]" << endl;
 }
 
+
 int randomV(int min, int max)
 {
     static std::mt19937 gen(std::random_device{}());
     return std::uniform_int_distribution<int>{min, max}(gen);
 }
+
 
 int gcd(int a, int b)
 {
@@ -699,4 +701,35 @@ unsigned int countLeadingZeros(unsigned int num)
     cout << "Número original: " << rawNumber << endl;
     cout << "Cantidad de ceros:" << counter;
     return counter;
+}
+
+
+vector<char> tableSubstitution(){
+  vector<char> S;
+  vector<char> hexA = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F'
+  };
+   vector<bool> X(hexA.size(), false);
+  
+  do {
+
+        int pos = randomV(0, hexA.size() - 1);
+        if (X[pos] == false)
+        {
+            S.push_back(hexA[pos]); 
+            X[pos] = true;
+        }
+    
+  } while(hexA.size() != S.size());
+
+
+  for (char c : hexA)
+    cout << c << " ";
+    cout << endl;
+
+  for (char k : S)
+    cout << k << " ";
+
+
+  return S;
 }
