@@ -672,9 +672,22 @@ public:
             }
         } while (z.size() != S.size());
 
-        // Guardar en archivo 
-        string filename = "tabla.txt";
-        ofstream outputFile("S-BOX_" + filename);
+        // Guardar en archivo
+        // Si el archivo existe con este nombre, se le agrega un número al final para no sobreescribirlo
+        int counter = 0;
+        string filename = "S-BOX_tabla.txt";
+
+        ifstream check(filename);
+        while (check.good())
+        {
+            check.close();
+            counter++;
+            filename = "S-BOX_" + to_string(counter) + "_tabla.txt";
+            check.open(filename);
+        }
+        check.close();
+
+        ofstream outputFile(filename);
 
         outputFile << "z : S" << endl;
         for (int i = 0; i < z.size(); i++)
@@ -745,6 +758,7 @@ public:
                 {
                     cout << hex << x;
                 }
+                cout << endl;
             }
         }
         else if (n == 3)
