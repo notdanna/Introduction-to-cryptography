@@ -733,6 +733,7 @@ vector<char> tableSubstitution()
     return S;
 }
 
+// a)
 string binaryRep(unsigned int num, int bits)
 {
     string r = "";
@@ -743,13 +744,14 @@ string binaryRep(unsigned int num, int bits)
 
 vector<unsigned int> functionS(int n)
 {
+    // z = {0, 1, 2, 3, ..., 2^n - 1}
     vector<unsigned int> z;
     vector<unsigned int> S;
 
-    //l = 2^n -> todas las combinaciones posibles de tamaño n
-    int l = 1 << n;  // 0000 0001 -> 0000 0100 / 0000 1000 / 0001 0000 / 0010 0000
+    // l = 2^n -> todas las combinaciones posibles de tamaño n
+    int l = 1 << n; // 0000 0001 -> (2) 0000 0100 / (3) 0000 1000 / (4) 0001 0000 / (5) 0010 0000
 
-    // Llenar el vector con las combinaciones posibles de cadenas 
+    // Llenar el vector con las combinaciones posibles de cadenas
     for (int i = 0; i < l; i++)
     {
         z.push_back(i);
@@ -768,22 +770,24 @@ vector<unsigned int> functionS(int n)
         }
 
     } while (z.size() != S.size());
-    
 
     cout << "Representación enteros" << endl;
-    cout << "z: " ;
+    cout << "z: ";
     for (unsigned int c : z)
         cout << c << " ";
     cout << endl;
-    
-    cout << "S: " ;
+
+    cout << "S: ";
     for (unsigned int k : S)
         cout << k << " ";
 
-    cout << endl << "Representación binaria" << endl;
+    cout << endl
+         << "Representación binaria" << endl;
     cout << "z: ";
     for (unsigned int c : z)
         cout << binaryRep(c, n) << " ";
+    // cout << bitset<bits> (c) << " ";
+
     cout << endl;
 
     cout << "S: ";
@@ -793,3 +797,27 @@ vector<unsigned int> functionS(int n)
 
     return S;
 }
+
+
+// b)
+// char array M[] = {'a', 'b', 'c'}
+// {01010101 , 01010001, 11100001}
+// concatenar {010101010101000111100001}
+// Si n = 4, separamos en bloques de 4 bits
+// si resultan x bloques de n = 4 bits
+// bloque 0 -> {0101} , bloque 1 -> {0101}, bloque 2 -> {0101}, bloque 3 -> {0001}, bloque 4 -> {1110}, bloque 5 -> {0001} 
+// convertir todos a enteros --- > vemos la s box de n = 4 y hacemos la sustitucion
+// convertimos a hexadecimal 
+// si n = 8, separamos en bloques de 8 bits
+// lo mismo
+
+
+
+
+// c)
+
+
+
+
+
+// d)
