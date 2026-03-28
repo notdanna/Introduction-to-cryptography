@@ -823,6 +823,9 @@ public:
         unsigned short ans = 0;
         int counter = 0;
 
+        cout << "Real K: 0x" << hex << K << endl
+             << endl;
+
         for (int i = 3; i >= 0; i--)
         {
             // 0000 0000 0000 0000
@@ -830,7 +833,7 @@ public:
             unsigned int block = (K >> (i * 4) & 0xF);
             unsigned int subs = S[block];
             ans = ans | (subs << (i * 4));
-
+           
             cout << "Bloque " << counter << ": " << binaryRep(block, 4) << " -> " << block << endl;
             cout << "Sustitución: " << binaryRep(subs, 4) << " -> " << subs << endl;
         }
