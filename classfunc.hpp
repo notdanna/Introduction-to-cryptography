@@ -736,7 +736,7 @@ public:
             {
                 unsigned char x = (unsigned char)c;
 
-                unsigned int firstbits = (x >> 4) & 0x0F; // 4 MSB
+                unsigned int firstbits = x >> 4;          // 4 MSB
                 unsigned int lastbits = x & 0x0F;         // 4 LSB
 
                 unsigned int firstS = S4[firstbits];
@@ -745,20 +745,24 @@ public:
                 ans.push_back(firstS);
                 ans.push_back(lastS);
 
+                cout << "Caracter: " << binaryRep(c, 8) << " -> " << (unsigned int)c << endl;
                 cout << "firstbytes: " << binaryRep(firstbits, 4) << " -> " << firstbits << endl;
                 cout << "lastbytes: " << binaryRep(lastbits, 4) << " -> " << lastbits << endl;
                 cout << "firstS: " << binaryRep(firstS, 4) << " -> " << firstS << endl;
-                cout << "lastS: " << binaryRep(lastS, 4) << " -> " << lastS << endl;
+                cout << "lastS: " << binaryRep(lastS, 4) << " -> " << lastS << endl
+                     << endl;
 
                 cout << "Hexadecimal fS: 0x" << hex << firstS << endl;
-                cout << "Hexadecimal lS: 0x" << lastS << dec << endl;
+                cout << "Hexadecimal lS: 0x" << lastS << dec << endl
+                     << endl;
 
                 cout << "Sustitución hexadecimal: 0x";
                 for (unsigned int x : ans)
                 {
                     cout << hex << x;
                 }
-                cout << endl;
+                cout << endl
+                     << endl;
             }
         }
         else if (n == 3)
@@ -770,18 +774,23 @@ public:
             {
                 unsigned char x = (unsigned char)c;
                 unsigned int substituted = S8[x];
-                cout << "Caracter: " << binaryRep(c, 8) << " -> " << (unsigned int)c << endl;
-                cout << "Sustitución: " << binaryRep(substituted, 8) << " -> " << substituted << endl;
+
+                cout << "Caracter: "
+                     << binaryRep(x, 8) << " -> "
+                     << dec << (unsigned int)x << endl;
+
+                cout << "Sustitucion:"
+                     << binaryRep(substituted, 8) << " -> "
+                     << dec << substituted << endl;
 
                 ans.push_back(substituted);
 
-                cout << "Sustitución hexadecimal: 0x";
+                cout << "Sustitucion hexadecimal: 0x";
                 for (unsigned int y : ans)
-
                 {
                     cout << hex << y;
                 }
-                cout << endl;
+                cout << dec << endl;
             }
         }
     }
@@ -791,7 +800,7 @@ public:
         vector<unsigned int> S1 = functionS(3);
         vector<unsigned int> S2 = functionS(3);
 
-        unsigned short firstbits = (K >> 8) & 0xFF;
+        unsigned short firstbits = K >> 8;
         unsigned short lastbits = K & 0xFF;
 
         unsigned short firstS = S1[firstbits];
@@ -833,7 +842,7 @@ public:
             unsigned int block = (K >> (i * 4) & 0xF);
             unsigned int subs = S[block];
             ans = ans | (subs << (i * 4));
-           
+
             cout << "Bloque " << counter << ": " << binaryRep(block, 4) << " -> " << block << endl;
             cout << "Sustitución: " << binaryRep(subs, 4) << " -> " << subs << endl;
         }

@@ -1,7 +1,7 @@
 #include "../classfunc.hpp"
 
 int main(){
-  int n = 2, option = 0;
+  int n = 0, option = 0;
   vector<char> M = {};
   vector<unsigned int> ans;
   char c;
@@ -18,6 +18,9 @@ int main(){
 
   switch(option){
     case 0:
+      cout << "Ingrese el valor de n (2 o 3): ";
+      cin >> n;
+      cout << endl; 
       ans = Practica6::functionS(n);
       break;
     case 1:
@@ -28,6 +31,9 @@ int main(){
         cin >> c;
         M.push_back(c);
       }
+      cout << "Ingrese el valor de n (2 o 3): ";
+      cin >> n;
+      cout << endl;
       Practica6::subsBlocks(M, n);
       break;
     case 2:
@@ -45,3 +51,4 @@ int main(){
       return 1;
   }
 }
+
