@@ -736,8 +736,8 @@ public:
             {
                 unsigned char x = (unsigned char)c;
 
-                unsigned int firstbits = x >> 4;          // 4 MSB
-                unsigned int lastbits = x & 0x0F;         // 4 LSB
+                unsigned int firstbits = x >> 4;  // 4 MSB
+                unsigned int lastbits = x & 0x0F; // 4 LSB
 
                 unsigned int firstS = S4[firstbits];
                 unsigned int lastS = S4[lastbits];
@@ -850,3 +850,49 @@ public:
         cout << "Sustitución hexadecimal: 0x" << hex << ans << endl;
     }
 };
+
+    // ===================================
+    // Práctica 7 — Tiny Block Cipher
+    // ===================================
+
+    class Practica7
+    {
+    public:
+        // Key Expansion
+        static void keyExpansion(unsigned short int K)
+        {
+            vector<unsigned int> S = Practica6::functionS(3);
+
+            unsigned short int w0 = K >> 8;
+            unsigned short int w1 = K & 0xFF;
+
+            cout << "Soy w0: " << hex << w0 << endl;
+            cout << "Soy w1: " << hex << w1 << endl;
+
+            unsigned short int R_tmp_1 = w1 >> 4;
+            unsigned short int R_tmp_2 = w1 & 0xFF;
+
+            unsigned short int R = (R_tmp_2 << 4) | R_tmp_1;
+            unsigned short int subs = S[R];
+
+            // op1
+            unsigned short int w2 = w0 ^ 0x80 ^ subs;
+            cout << "Soy w2: " << hex << w2 << endl;
+
+            // op2
+            unsigned short int w3 = w2 ^ w1;
+            cout << "Soy w3: " << hex << w3 << endl;
+
+            // op3
+            R_tmp_1 = w3 >> 4;
+            R_tmp_2 = w3 & 0x0F;
+            R = (R_tmp_2 << 4) | R_tmp_1;
+            subs = S[R];
+            unsigned short int w4 = w2 ^ 0x30 ^ subs;
+            cout << "Soy w4: " << hex << w4 << endl;
+
+            // op4
+            unsigned short int w5 = w4 ^ w3;
+            cout << "Soy w5: " << hex << w5 << endl;
+        }
+    };
