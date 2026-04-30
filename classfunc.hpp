@@ -851,48 +851,430 @@ public:
     }
 };
 
-    // ===================================
-    // Práctica 7 — Tiny Block Cipher
-    // ===================================
+// ===================================
+// Práctica 7 — Tiny Block Cipher
+// ===================================
 
-    class Practica7
+class Practica7
+{
+public:
+    // Key Expansion
+    static vector<unsigned int> keyExpansion(unsigned short int K, const vector<unsigned int> &S)
     {
-    public:
-        // Key Expansion
-        static void keyExpansion(unsigned short int K)
+        vector<unsigned int> W;
+
+        unsigned short int w0 = K >> 8;
+        W.push_back(w0);
+
+        unsigned short int w1 = K & 0xFF;
+        W.push_back(w1);
+
+        cout << "Soy w0: " << uppercase << hex << setw(2) << setfill('0') << w0 << endl;
+        cout << "Soy w1: " << uppercase << hex << setw(2) << setfill('0') << w1 << endl;
+
+        // r(w1)
+        unsigned short int R_tmp_1 = w1 >> 4;
+        unsigned short int R_tmp_2 = w1 & 0x0F;
+        unsigned short int R = (R_tmp_2 << 4) | R_tmp_1;
+
+        unsigned short int subs = S[R];
+
+        // op1
+        unsigned short int w2 = w0 ^ 0x80 ^ subs;
+        W.push_back(w2);
+        cout << "Soy w2: " << uppercase << hex << setw(2) << setfill('0') << w2 << endl;
+
+        // op2
+        unsigned short int w3 = w2 ^ w1;
+        W.push_back(w3);
+        cout << "Soy w3: " << uppercase << hex << setw(2) << setfill('0') << w3 << endl;
+
+        // r(w3)
+        R_tmp_1 = w3 >> 4;
+        R_tmp_2 = w3 & 0x0F;
+        R = (R_tmp_2 << 4) | R_tmp_1;
+
+        subs = S[R];
+
+        // op3
+        unsigned short int w4 = w2 ^ 0x30 ^ subs;
+        W.push_back(w4);
+        cout << "Soy w4: " << uppercase << hex << setw(2) << setfill('0') << w4 << endl;
+
+        // op4
+        unsigned short int w5 = w4 ^ w3;
+        W.push_back(w5);
+        cout << "Soy w5: " << uppercase << hex << setw(2) << setfill('0') << w5 << endl;
+
+        return W;
+    }
+
+    // Tiny block cipher
+    // Ejercicio 1 a)
+    static unsigned short int generateKey()
+    {
+        unsigned short int K = Utils::randomV(0, 65535);
+
+        int counter = 0;
+        string filename = "KEY.txt";
+
+        ifstream check(filename);
+        while (check.good())
         {
-            vector<unsigned int> S = Practica6::functionS(3);
-
-            unsigned short int w0 = K >> 8;
-            unsigned short int w1 = K & 0xFF;
-
-            cout << "Soy w0: " << hex << w0 << endl;
-            cout << "Soy w1: " << hex << w1 << endl;
-
-            unsigned short int R_tmp_1 = w1 >> 4;
-            unsigned short int R_tmp_2 = w1 & 0xFF;
-
-            unsigned short int R = (R_tmp_2 << 4) | R_tmp_1;
-            unsigned short int subs = S[R];
-
-            // op1
-            unsigned short int w2 = w0 ^ 0x80 ^ subs;
-            cout << "Soy w2: " << hex << w2 << endl;
-
-            // op2
-            unsigned short int w3 = w2 ^ w1;
-            cout << "Soy w3: " << hex << w3 << endl;
-
-            // op3
-            R_tmp_1 = w3 >> 4;
-            R_tmp_2 = w3 & 0x0F;
-            R = (R_tmp_2 << 4) | R_tmp_1;
-            subs = S[R];
-            unsigned short int w4 = w2 ^ 0x30 ^ subs;
-            cout << "Soy w4: " << hex << w4 << endl;
-
-            // op4
-            unsigned short int w5 = w4 ^ w3;
-            cout << "Soy w5: " << hex << w5 << endl;
+            check.close();
+            counter++;
+            filename = "KEY_" + to_string(counter) + ".txt";
+            check.open(filename);
         }
-    };
+        check.close();
+
+        ofstream outputFile(filename);
+
+        outputFile << uppercase << hex << setw(4) << setfill('0') << K << endl;
+
+        outputFile.close();
+
+        return K;
+    }
+
+    // Ejercicio 1 b)
+    static vector<unsigned int> functionS(int n)
+    {
+        vector<unsigned int> z, S;
+
+        // l = 2^n
+        // combinations = 2^l
+        int l = 1 << n;
+        int combinations = 1 << l;
+
+        for (int i = 0; i < combinations; i++)
+            z.push_back(i);
+
+        vector<bool> X(z.size(), false);
+
+        do
+        {
+            int pos = Utils::randomV(0, z.size() - 1);
+            if (X[pos] == false)
+            {
+                S.push_back(z[pos]);
+                X[pos] = true;
+            }
+        } while (z.size() != S.size());
+
+        // Guardar en archivo
+        // Si el archivo existe con este nombre, se le agrega un número al final para no sobreescribirlo
+        int counter = 0;
+        string filename = "S-BOX_tabla.txt";
+
+        ifstream check(filename);
+        while (check.good())
+        {
+            check.close();
+            counter++;
+            filename = "S-BOX_" + to_string(counter) + "_tabla.txt";
+            check.open(filename);
+        }
+        check.close();
+
+        ofstream outputFile(filename);
+
+        for (int i = 0; i < S.size(); i++)
+        {
+            outputFile << uppercase << hex << setw(2) << setfill('0') << S[i] << endl;
+        }
+
+        outputFile.close();
+
+        return S;
+    }
+
+    // Ejercicio 2
+    static unsigned short int readKeyFromFile(const string &filename)
+    {
+        ifstream inputFile(filename);
+
+        if (!inputFile.is_open())
+        {
+            cerr << "No se pudo abrir el archivo de la clave." << endl;
+            return 0;
+        }
+
+        unsigned short int K;
+        inputFile >> hex >> K;
+
+        inputFile.close();
+        return K;
+    }
+
+    static vector<unsigned int> readSFromFile(const string &filename)
+    {
+        ifstream inputFile(filename);
+        vector<unsigned int> S;
+
+        if (!inputFile.is_open())
+        {
+            cerr << "No se pudo abrir el archivo de la S-box." << endl;
+            return S;
+        }
+
+        unsigned int value;
+        while (inputFile >> hex >> value)
+        {
+            S.push_back(value);
+        }
+
+        inputFile.close();
+        return S;
+    }
+
+    static unsigned short int tinyBlockCipher(unsigned short int M, unsigned short int K, const vector<unsigned int> &S)
+    {
+        vector<unsigned int> W = keyExpansion(K, S);
+
+        unsigned short int K0 = (W[0] << 8) | W[1];
+        unsigned short int K1 = (W[2] << 8) | W[3];
+        unsigned short int K2 = (W[4] << 8) | W[5];
+
+        vector<unsigned short int> roundKeys;
+        roundKeys.push_back(K0);
+        roundKeys.push_back(K1);
+        roundKeys.push_back(K2);
+
+        for (int i = 0; i < 3; i++)
+        {
+            M = M ^ roundKeys[i];
+
+            unsigned int m1 = M >> 8;
+            unsigned int m2 = M & 0xFF;
+
+            m1 = S[m1];
+            m2 = S[m2];
+
+            M = (m1 << 8) | m2;
+        }
+
+        unsigned short int C = M;
+        return C;
+    }
+};
+
+// ===================================
+// Práctica 8 — Tiny Block Cipher II
+// ===================================
+
+class Practica8
+{
+public:
+    // Part 1
+    // S-BOX inverse
+    static vector<unsigned int> functionSinverse(vector<unsigned int> S)
+    {
+        int n = S.size();
+        vector<unsigned int> S_inv(n);
+        for (int i = 0; i < n; i++)
+        {
+            unsigned int posix = S[i];
+            S_inv[posix] = i;
+        }
+
+        // Guardar en archivo
+        // Si el archivo existe con este nombre, se le agrega un número al final para no sobreescribirlo
+        int counter = 0;
+        string filename = "S-BOX-INVERSE_tabla.txt";
+
+        ifstream check(filename);
+        while (check.good())
+        {
+            check.close();
+            counter++;
+            filename = "S-BOX-INVERSE_" + to_string(counter) + "_tabla.txt";
+            check.open(filename);
+        }
+        check.close();
+
+        ofstream outputFile(filename);
+
+        for (int i = 0; i < S_inv.size(); i++)
+        {
+            outputFile << uppercase << hex << setw(2) << setfill('0') << S_inv[i] << endl;
+        }
+
+        outputFile.close();
+
+        return S_inv;
+    }
+
+    // Tiny block decipher
+    static unsigned short int tinyBlockDecipher(unsigned short int C, unsigned short int K, const vector<unsigned int> &S)
+    {
+        vector<unsigned int> W = Practica7::keyExpansion(K, S);
+
+        unsigned short int K0 = (W[0] << 8) | W[1];
+        unsigned short int K1 = (W[2] << 8) | W[3];
+        unsigned short int K2 = (W[4] << 8) | W[5];
+
+        vector<unsigned short int> roundKeys;
+        roundKeys.push_back(K0);
+        roundKeys.push_back(K1);
+        roundKeys.push_back(K2);
+
+        // S-BOX inversa
+        vector<unsigned int> S_inv = functionSinverse(S);
+
+        // Para descifrar, se aplican las rondas en orden inverso y con la S-box inversa
+        for (int i = 2; i >= 0; i--)
+        {
+            unsigned int c1 = C >> 8;
+            unsigned int c2 = C & 0xFF;
+
+            c1 = S_inv[c1];
+            c2 = S_inv[c2];
+
+            C = (c1 << 8) | c2;
+
+            C = C ^ roundKeys[i];
+        }
+
+        unsigned short int M = C;
+        return M;
+    }
+
+    // Part 2
+    // Exercise 1
+    static vector<int> pi(int n)
+    {
+        vector<int> PI;
+        vector<bool> X(n, false);
+
+        do
+        {
+            int m = Utils::randomV(0, n - 1);
+
+            if (X[m] == false)
+            {
+                PI.push_back(m);
+                X[m] = true;
+            }
+
+        } while ((int)PI.size() < n);
+
+        return PI;
+    }
+
+    static unsigned int getNthBit(unsigned int num, unsigned int n)
+    {
+        unsigned int mask = 1 << n;
+        return (num & mask) ? 1 : 0;
+    }
+
+    static unsigned int setNthBit(unsigned int num, unsigned int n)
+    {
+        unsigned int mask = 1 << n;
+        return num | mask;
+    }
+
+    static unsigned char permutation(const vector<int> &P, unsigned char s)
+    {
+        unsigned char P_S = 0;
+
+        for (int i = 0; i < 8; i++)
+        {
+            unsigned int bit = getNthBit(s, P[i]);
+
+            if (bit == 1)
+            {
+                P_S = setNthBit(P_S, 7 - i);
+            }
+        }
+
+        return P_S;
+    }
+
+    // Exercise 2
+    static unsigned short int tinyBlockCipherPermutation(unsigned short int M, unsigned short int K, const vector<unsigned int> &S, const vector<int> &P)
+    {
+        vector<unsigned int> W = Practica7::keyExpansion(K, S);
+
+        unsigned short int K0 = (W[0] << 8) | W[1];
+        unsigned short int K1 = (W[2] << 8) | W[3];
+        unsigned short int K2 = (W[4] << 8) | W[5];
+
+        vector<unsigned short int> roundKeys;
+        roundKeys.push_back(K0);
+        roundKeys.push_back(K1);
+        roundKeys.push_back(K2);
+
+        for (int i = 0; i < 3; i++)
+        {
+            M = M ^ roundKeys[i];
+
+            unsigned char m1 = M >> 8;
+            unsigned char m2 = M & 0xFF;
+
+            m1 = S[m1];
+            m2 = S[m2];
+
+            m1 = permutation(P, m1);
+            m2 = permutation(P, m2);
+
+            M = (m1 << 8) | m2;
+        }
+
+        unsigned short int C = M;
+        return C;
+    }
+
+    // Exercise 3
+    static unsigned char inversePermutation(const vector<int> &P, unsigned char s)
+    {
+        unsigned char original = 0;
+
+        for (int i = 0; i < 8; i++)
+        {
+            unsigned int bit = getNthBit(s, 7 - i);
+
+            if (bit == 1)
+            {
+                original = setNthBit(original, P[i]);
+            }
+        }
+
+        return original;
+    }
+
+    static unsigned short int tinyBlockDecipherPermutation(unsigned short int C, unsigned short int K, const vector<unsigned int> &S, const vector<int> &P)
+    {
+        vector<unsigned int> W = Practica7::keyExpansion(K, S);
+
+        unsigned short int K0 = (W[0] << 8) | W[1];
+        unsigned short int K1 = (W[2] << 8) | W[3];
+        unsigned short int K2 = (W[4] << 8) | W[5];
+
+        vector<unsigned short int> roundKeys;
+        roundKeys.push_back(K0);
+        roundKeys.push_back(K1);
+        roundKeys.push_back(K2);
+
+        vector<unsigned int> S_inv = functionSinverse(S);
+
+        for (int i = 2; i >= 0; i--)
+
+        {
+            unsigned char c1 = C >> 8;
+            unsigned char c2 = C & 0xFF;
+
+            c1 = inversePermutation(P, c1);
+            c2 = inversePermutation(P, c2);
+
+            c1 = S_inv[c1];
+            c2 = S_inv[c2];
+
+            C = (c1 << 8) | c2;
+
+            C = C ^ roundKeys[i];
+        }
+        unsigned short int M = C;
+        return M;
+    }
+};
