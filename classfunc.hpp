@@ -1278,3 +1278,705 @@ public:
         return M;
     }
 };
+
+// ===================================
+// Práctica 9 —  Mode of operation CTR
+// ===================================
+
+class Practica9
+{
+public:
+    // Convertir un byte a hexadecimal de 2 dígitos
+    static string byteToHex(unsigned char value)
+    {
+        stringstream ss;
+        ss << uppercase << hex << setw(2) << setfill('0') << (int)value;
+        return ss.str();
+    }
+
+    // Convertir 16 bits a hexadecimal de 4 dígitos
+    static string shortToHex(unsigned short int value)
+    {
+        stringstream ss;
+        ss << uppercase << hex << setw(4) << setfill('0') << value;
+        return ss.str();
+    }
+
+    // Convertir string hexadecimal a vector de bytes
+    static vector<unsigned char> hexStringToBytes(const string &hexStr)
+    {
+        vector<unsigned char> bytes;
+
+        if (hexStr.size() % 2 != 0)
+        {
+            cerr << "Error: la cadena hexadecimal debe tener longitud par." << endl;
+            return bytes;
+        }
+
+        for (size_t i = 0; i < hexStr.size(); i += 2)
+        {
+            string byteStr = hexStr.substr(i, 2);
+            unsigned char byte = (unsigned char)stoul(byteStr, nullptr, 16);
+            bytes.push_back(byte);
+        }
+
+        return bytes;
+    }
+
+    // Convertir vector de bytes a string hexadecimal
+    static string bytesToHexString(const vector<unsigned char> &bytes)
+    {
+        string result;
+        for (unsigned char b : bytes)
+        {
+            result += byteToHex(b);
+        }
+        return result;
+    }
+
+    // CTR ENCIPHER
+    static string ctrEncipher(const string &plaintext, unsigned short int K, const vector<unsigned int> &S, const vector<int> &P)
+    {
+        unsigned char C0 = Utils::randomV(0, 255); // random(0,255)
+        unsigned char C1 = 0;                      // contador inicial
+
+        vector<unsigned char> ciphertextBytes;
+
+        // Guardar C0 al inicio del ciphertext
+        ciphertextBytes.push_back(C0);
+
+        int lenMess = (int)plaintext.size();
+        int inicioBloque = 0;
+
+        while (inicioBloque < lenMess)
+        {
+            // Formar CTR = C0 || C1
+            unsigned short int CTR = (C0 << 8) | C1;
+
+            // Zi = TinyBlockCipher(CTR, K, S, P)
+            unsigned short int Zi = Practica8::tinyBlockCipherPermutation(CTR, K, S, P);
+
+            // Caso 1: bloque completo de 16 bits
+            if (inicioBloque + 1 < lenMess)
+            {
+                unsigned char m0 = plaintext[inicioBloque];
+                unsigned char m1 = plaintext[inicioBloque + 1];
+
+                unsigned short int Mi = (m0 << 8) | m1;
+                unsigned short int Yi = Mi ^ Zi;
+
+                unsigned char y0 = Yi >> 8;
+                unsigned char y1 = Yi & 0xFF;
+
+                ciphertextBytes.push_back(y0);
+                ciphertextBytes.push_back(y1);
+            }
+            // Caso 2: último bloque parcial de 8 bits
+            else
+            {
+                unsigned char m0 = plaintext[inicioBloque];
+
+                // truncar a 8 MSB
+                unsigned char z0 = Zi >> 8;
+
+                unsigned char y0 = m0 ^ z0;
+                ciphertextBytes.push_back(y0);
+            }
+
+            C1++;
+            inicioBloque += 2;
+        }
+
+        return bytesToHexString(ciphertextBytes);
+    }
+
+    // CTR DECIPHER
+    static string ctrDecipher(const string &ciphertextHex, unsigned short int K, const vector<unsigned int> &S, const vector<int> &P)
+    {
+        vector<unsigned char> cipherBytes = hexStringToBytes(ciphertextHex);
+
+        // Extraer C0 del inicio
+        unsigned char C0 = cipherBytes[0];
+        unsigned char C1 = 0;
+
+        string plaintext = "";
+
+        // Procesar desde el byte 1 porque el 0 es C0
+        int i = 1;
+        while (i < (int)cipherBytes.size())
+        {
+            unsigned short int CTR = (C0 << 8) | C1;
+            unsigned short int Zi = Practica8::tinyBlockCipherPermutation(CTR, K, S, P);
+
+            // Caso 1: bloque completo de 16 bits
+            if (i + 1 < (int)cipherBytes.size())
+            {
+                unsigned char y0 = cipherBytes[i];
+                unsigned char y1 = cipherBytes[i + 1];
+
+                unsigned short int Yi = (y0 << 8) | y1;
+                unsigned short int Mi = Yi ^ Zi;
+
+                unsigned char m0 = Mi >> 8;
+                unsigned char m1 = Mi & 0xFF;
+
+                plaintext += (char)m0;
+                plaintext += (char)m1;
+
+                i += 2;
+            }
+            // Caso 2: último bloque parcial de 8 bits
+            else
+            {
+                unsigned char y0 = cipherBytes[i];
+
+                // truncar a 8 MSB
+                unsigned char z0 = (Zi >> 8) & 0xFF;
+
+                unsigned char m0 = y0 ^ z0;
+                plaintext += (char)m0;
+
+                i += 1;
+            }
+
+            C1++;
+        }
+
+        return plaintext;
+    }
+};
+
+// =========================================
+// Práctica 10 —  Multiplication on GF (2^n)
+// =========================================
+
+class Practica10
+{
+public:
+    // Exercise 1:
+    // Compute x * f(x) mod (x^16 + x^5 + x^3 + x + 1)
+    static unsigned short multiplyByX(unsigned short f)
+    {
+        unsigned short r = 0x002B; // x^5 + x^3 + x + 1
+        unsigned short msb;
+        unsigned short result;
+
+        msb = f & 0x8000;
+        result = f << 1;
+
+        if (msb != 0)
+        {
+            result = result ^ r;
+        }
+        return result;
+    }
+
+    // Imprimir resultado del Exercise 1
+    static void printMultiplyByX(unsigned short f)
+    {
+        unsigned short result = multiplyByX(f);
+
+        cout << "Exercise 1" << endl;
+        cout << "f(x)    = " << Practica9::shortToHex(f) << endl;
+        cout << "x*f(x) = " << Practica9::shortToHex(result) << endl;
+    }
+
+    // Exercise 2:
+    // Compute f(x) * g(x) mod (x^16 + x^5 + x^3 + x + 1)
+    static unsigned short gfMultiply(unsigned short f, unsigned short g)
+    {
+        unsigned short result = 0;
+        for (int i = 0; i < 16; i++)
+        {
+            if ((g & 1) == 1)
+            {
+                result = result ^ f;
+            }
+            f = multiplyByX(f);
+            g = g >> 1;
+        }
+        return result;
+    }
+
+    // Imprimir resultado del Exercise 2
+    static void printMultiplication(unsigned short f, unsigned short g)
+    {
+        unsigned short result = gfMultiply(f, g);
+
+        cout << "Exercise 2" << endl;
+        cout << "f(x) = " << Practica9::shortToHex(f) << endl;
+        cout << "g(x) = " << Practica9::shortToHex(g) << endl;
+        cout << "f(x) * g(x) mod m(x) = " << Practica9::shortToHex(result) << endl;
+    }
+};
+
+// =========================================
+// Proyecto 1 — TBC16-CTR
+// =========================================
+
+class Proyecto1
+{
+public:
+    // Utilities for encoding in base64
+    static string encodeBase64(const vector<unsigned char> &data)
+    {
+        string base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        string encoded = "";
+
+        int i = 0;
+        int n = (int)data.size();
+
+        while (i < n)
+        {
+            unsigned char b0 = data[i++];
+            bool hasB1 = (i < n);
+            unsigned char b1 = hasB1 ? data[i++] : 0;
+            bool hasB2 = (i < n);
+            unsigned char b2 = hasB2 ? data[i++] : 0;
+
+            unsigned int combined =
+                ((unsigned int)b0 << 16) |
+                ((unsigned int)b1 << 8) |
+                (unsigned int)b2;
+
+            encoded += base64Chars[(combined >> 18) & 0x3F];
+            encoded += base64Chars[(combined >> 12) & 0x3F];
+
+            if (hasB1)
+                encoded += base64Chars[(combined >> 6) & 0x3F];
+            else
+                encoded += '=';
+
+            if (hasB2)
+                encoded += base64Chars[combined & 0x3F];
+            else
+                encoded += '=';
+        }
+
+        return encoded;
+    }
+
+    static vector<unsigned char> decodeBase64(const string &encoded)
+    {
+        string base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+        vector<unsigned char> decoded;
+
+        int i = 0;
+        int n = (int)encoded.size();
+
+        while (i < n)
+        {
+            char c0 = encoded[i++];
+            char c1 = encoded[i++];
+            char c2 = encoded[i++];
+            char c3 = encoded[i++];
+
+            size_t v0 = base64Chars.find(c0);
+            size_t v1 = base64Chars.find(c1);
+            size_t v2 = (c2 == '=') ? 0 : base64Chars.find(c2);
+            size_t v3 = (c3 == '=') ? 0 : base64Chars.find(c3);
+
+            unsigned int combined =
+                ((unsigned int)v0 << 18) |
+                ((unsigned int)v1 << 12) |
+                ((unsigned int)v2 << 6) |
+                (unsigned int)v3;
+
+            unsigned char b0 = (combined >> 16) & 0xFF;
+            unsigned char b1 = (combined >> 8) & 0xFF;
+            unsigned char b2 = combined & 0xFF;
+
+            decoded.push_back(b0);
+
+            if (c2 != '=')
+                decoded.push_back(b1);
+
+            if (c3 != '=')
+                decoded.push_back(b2);
+        }
+
+        return decoded;
+    }
+
+    // Adjustments to the tiny block cipher:
+    // Adjustment 1:
+    static vector<unsigned int> generateSbox(int n)
+    {
+        vector<unsigned int> z, S;
+
+        int l = 1 << n;
+        int combinations = 1 << l;
+
+        for (int i = 0; i < combinations; i++)
+            z.push_back(i);
+
+        vector<bool> X(z.size(), false);
+
+        do
+        {
+            int pos = Utils::randomV(0, z.size() - 1);
+            if (X[pos] == false)
+            {
+                S.push_back(z[pos]);
+                X[pos] = true;
+            }
+        } while (z.size() != S.size());
+
+        string filename = "CAK_sbox.txt";
+
+        ofstream outputFile(filename);
+
+        for (int i = 0; i < S.size(); i++)
+        {
+            outputFile << uppercase << hex << setw(2) << setfill('0') << S[i] << endl;
+        }
+
+        outputFile.close();
+
+        return S;
+    }
+
+    // Adjustment 2:
+    static unsigned short int generateKey()
+    {
+        unsigned short int K = Utils::randomV(0, 65535);
+
+        string filename = "CAK_key.txt";
+
+        // Separar la key en 2 bytes
+        unsigned char k0 = (K >> 8) & 0xFF;
+        unsigned char k1 = K & 0xFF;
+
+        vector<unsigned char> keyBytes;
+        keyBytes.push_back(k0);
+        keyBytes.push_back(k1);
+
+        string base64Key = encodeBase64(keyBytes);
+
+        ofstream outputFile(filename);
+        outputFile << base64Key << endl;
+        outputFile.close();
+
+        return K;
+    }
+
+    // Adjustment 3 & 4:
+    static unsigned short int readKeyFromFile(const string &filename)
+    {
+        ifstream inputFile(filename);
+
+        if (!inputFile.is_open())
+        {
+            cerr << "No se pudo abrir el archivo de la clave." << endl;
+            return 0;
+        }
+
+        string base64Key;
+        inputFile >> base64Key;
+        inputFile.close();
+
+        if (base64Key.size() != 4 || base64Key[3] != '=')
+        {
+            cerr << "Error: formato base64 invalido para la clave." << endl;
+            return 0;
+        }
+
+        string base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+
+        size_t v0 = base64Chars.find(base64Key[0]);
+        size_t v1 = base64Chars.find(base64Key[1]);
+        size_t v2 = base64Chars.find(base64Key[2]);
+
+        if (v0 == string::npos || v1 == string::npos || v2 == string::npos)
+        {
+            cerr << "Error: caracter invalido en la clave codificada en base64." << endl;
+            return 0;
+        }
+
+        unsigned int combined = ((unsigned int)v0 << 18) | ((unsigned int)v1 << 12) | ((unsigned int)v2 << 6);
+
+        unsigned char k0 = (combined >> 16) & 0xFF;
+        unsigned char k1 = (combined >> 8) & 0xFF;
+
+        unsigned short int K = ((unsigned short int)k0 << 8) | k1;
+
+        return K;
+    }
+
+    static vector<unsigned int> readSFromFile(const string &filename)
+    {
+        ifstream inputFile(filename);
+        vector<unsigned int> S;
+
+        if (!inputFile.is_open())
+        {
+            cerr << "No se pudo abrir el archivo de la S-box." << endl;
+            return S;
+        }
+
+        unsigned int value;
+        while (inputFile >> hex >> value)
+        {
+            S.push_back(value);
+        }
+
+        inputFile.close();
+        return S;
+    }
+
+    static unsigned short int tinyBlockCipher16(unsigned short int M, unsigned short int K)
+    {
+        vector<unsigned int> S = readSFromFile("CAK_sbox.txt");
+        vector<int> P = {3, 4, 5, 6, 1, 2, 0, 7};
+
+        vector<unsigned int> W = Practica7::keyExpansion(K, S);
+
+        unsigned short int K0 = (W[0] << 8) | W[1];
+        unsigned short int K1 = (W[2] << 8) | W[3];
+        unsigned short int K2 = (W[4] << 8) | W[5];
+
+        vector<unsigned short int> roundKeys;
+        roundKeys.push_back(K0);
+        roundKeys.push_back(K1);
+        roundKeys.push_back(K2);
+
+        for (int i = 0; i < 3; i++)
+        {
+            M = M ^ roundKeys[i];
+
+            unsigned char m1 = (M >> 8) & 0xFF;
+            unsigned char m2 = M & 0xFF;
+
+            m1 = S[m1];
+            m2 = S[m2];
+
+            m1 = Practica8::permutation(P, m1);
+            m2 = Practica8::permutation(P, m2);
+
+            M = (m1 << 8) | m2;
+        }
+
+        return M;
+    }
+
+    // Adding the CTR mode of operation to the tiny block cipher
+    // Adding 1, 2, 3, 4:
+    struct CTRResult
+    {
+        vector<unsigned char> ciphertextBytes;
+        unsigned short int counter;
+    };
+
+    static CTRResult ctrEncipher(const string &filenameM, const string &filenameK)
+    {
+        ifstream inputFile(filenameM, ios::binary);
+
+        if (!inputFile.is_open())
+        {
+            cerr << "No se pudo abrir el archivo del plaintext." << endl;
+            return {{}, 0};
+        }
+
+        vector<unsigned char> plaintextBytes;
+        char ch;
+
+        while (inputFile.get(ch))
+        {
+            plaintextBytes.push_back((unsigned char)ch);
+        }
+
+        inputFile.close();
+
+        unsigned short int K = readKeyFromFile(filenameK);
+
+        unsigned char C0 = Utils::randomV(0, 255); // random(0,255)
+        unsigned char C1 = 0;                      // contador inicial
+
+        vector<unsigned char> ciphertextBytes;
+
+        // Guardar C0 al inicio del ciphertext
+        //ciphertextBytes.push_back(C0);
+
+        int lenMess = (int)plaintextBytes.size();
+        int inicioBloque = 0;
+
+        while (inicioBloque < lenMess)
+        {
+            // Formar CTR = C0 || C1
+            unsigned short int CTR = ((unsigned short int)C0 << 8) | C1;
+
+            // Zi = TinyBlockCipher16(CTR, K)
+            unsigned short int Zi = tinyBlockCipher16(CTR, K);
+
+            // Caso 1: bloque completo de 16 bits
+            if (inicioBloque + 1 < lenMess)
+            {
+                unsigned char m0 = plaintextBytes[inicioBloque];
+                unsigned char m1 = plaintextBytes[inicioBloque + 1];
+
+                unsigned short int Mi = ((unsigned short int)m0 << 8) | m1;
+                unsigned short int Yi = Mi ^ Zi;
+
+                unsigned char y0 = (Yi >> 8) & 0xFF;
+                unsigned char y1 = Yi & 0xFF;
+
+                ciphertextBytes.push_back(y0);
+                ciphertextBytes.push_back(y1);
+            }
+            // Caso 2: último bloque parcial de 8 bits
+            else
+            {
+                unsigned char m0 = plaintextBytes[inicioBloque];
+
+                // truncar a 8 MSB
+                unsigned char z0 = (Zi >> 8) & 0xFF;
+
+                unsigned char y0 = m0 ^ z0;
+                ciphertextBytes.push_back(y0);
+            }
+
+            C1++;
+            inicioBloque += 2;
+        }
+
+        CTRResult result;
+        result.ciphertextBytes = ciphertextBytes;
+        result.counter = ((unsigned short int)C0 << 8);
+
+        cout << "Counter usado en hexadecimal: "
+             << uppercase << hex << setw(4) << setfill('0') << result.counter << endl;
+
+        cout << "Ciphertext en hexadecimal: "
+             << Practica9::bytesToHexString(result.ciphertextBytes) << endl;
+
+        return result;
+    }
+
+    static void saveCTRResultToFile(const CTRResult &result, const string &filenameOut)
+    {
+        ofstream outputFile(filenameOut);
+
+        if (!outputFile.is_open())
+        {
+            cerr << "No se pudo abrir el archivo de salida." << endl;
+            return;
+        }
+
+        // Counter a bytes
+        unsigned char c0 = (result.counter >> 8) & 0xFF;
+        unsigned char c1 = result.counter & 0xFF;
+
+        vector<unsigned char> counterBytes;
+        counterBytes.push_back(c0);
+        counterBytes.push_back(c1);
+
+        string counterBase64 = encodeBase64(counterBytes);
+        string ciphertextBase64 = encodeBase64(result.ciphertextBytes);
+
+        outputFile << counterBase64 << endl;
+        outputFile << ciphertextBase64 << endl;
+
+        outputFile.close();
+    }
+
+    // Adding the deciphering function for the CTR mode of operation
+    struct CTRDecipherResult
+    {
+        string plaintext;
+        unsigned short int counter;
+    };
+
+    static CTRDecipherResult ctrDecipher(const string &filenameC, const string &filenameK)
+    {
+        ifstream inputFile(filenameC);
+
+        if (!inputFile.is_open())
+        {
+            cerr << "No se pudo abrir el archivo de entrada." << endl;
+            return {"", 0};
+        }
+
+        string counterBase64;
+        string ciphertextBase64;
+
+        getline(inputFile, counterBase64);
+        getline(inputFile, ciphertextBase64);
+
+        inputFile.close();
+
+        if (counterBase64.empty() || ciphertextBase64.empty())
+        {
+            cerr << "Error: el archivo de entrada no contiene counter y ciphertext validos." << endl;
+            return {"", 0};
+        }
+
+        vector<unsigned char> counterBytes = decodeBase64(counterBase64);
+        vector<unsigned char> cipherBytes = decodeBase64(ciphertextBase64);
+
+        if (counterBytes.size() != 2)
+        {
+            cerr << "Error: el counter decodificado no tiene 2 bytes." << endl;
+            return {"", 0};
+        }
+
+        unsigned short int K = readKeyFromFile(filenameK);
+
+        // Extraer C0 del counter
+        unsigned char C0 = counterBytes[0];
+        unsigned char C1 = 0;
+
+        string plaintext = "";
+
+        // Procesar el ciphertext completo por bloques
+        int i = 0;
+        while (i < (int)cipherBytes.size())
+        {
+            // Formar CTR = C0 || C1
+            unsigned short int CTR = ((unsigned short int)C0 << 8) | C1;
+
+            // Zi = TinyBlockCipher16(CTR, K)
+            unsigned short int Zi = tinyBlockCipher16(CTR, K);
+
+            // Caso 1: bloque completo de 16 bits
+            if (i + 1 < (int)cipherBytes.size())
+            {
+                unsigned char y0 = cipherBytes[i];
+                unsigned char y1 = cipherBytes[i + 1];
+
+                unsigned short int Yi = ((unsigned short int)y0 << 8) | y1;
+                unsigned short int Mi = Yi ^ Zi;
+
+                unsigned char m0 = (Mi >> 8) & 0xFF;
+                unsigned char m1 = Mi & 0xFF;
+
+                plaintext += (char)m0;
+                plaintext += (char)m1;
+
+                i += 2;
+            }
+            // Caso 2: último bloque parcial de 8 bits
+            else
+            {
+                unsigned char y0 = cipherBytes[i];
+
+                // truncar a 8 MSB
+                unsigned char z0 = (Zi >> 8) & 0xFF;
+
+                unsigned char m0 = y0 ^ z0;
+                plaintext += (char)m0;
+
+                i += 1;
+            }
+
+            C1++;
+        }
+
+        unsigned short int counter = ((unsigned short int)counterBytes[0] << 8) | counterBytes[1];
+
+        CTRDecipherResult result;
+        result.plaintext = plaintext;
+        result.counter = counter;
+
+        return result;
+    }
+};
