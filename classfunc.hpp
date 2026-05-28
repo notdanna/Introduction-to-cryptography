@@ -1526,7 +1526,7 @@ public:
         int i = 0;
         int n = (int)data.size();
 
-        while (i < n)
+        while (i < n).
         {
             unsigned char b0 = data[i++];
             bool hasB1 = (i < n);
@@ -1675,28 +1675,16 @@ public:
         inputFile >> base64Key;
         inputFile.close();
 
-        if (base64Key.size() != 4 || base64Key[3] != '=')
+        vector<unsigned char> keyBytes = decodeBase64(base64Key);
+
+        if (keyBytes.size() != 2)
         {
-            cerr << "Error: formato base64 invalido para la clave." << endl;
+            cerr << "Error: la clave decodificada no tiene 2 bytes." << endl;
             return 0;
         }
 
-        string base64Chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
-
-        size_t v0 = base64Chars.find(base64Key[0]);
-        size_t v1 = base64Chars.find(base64Key[1]);
-        size_t v2 = base64Chars.find(base64Key[2]);
-
-        if (v0 == string::npos || v1 == string::npos || v2 == string::npos)
-        {
-            cerr << "Error: caracter invalido en la clave codificada en base64." << endl;
-            return 0;
-        }
-
-        unsigned int combined = ((unsigned int)v0 << 18) | ((unsigned int)v1 << 12) | ((unsigned int)v2 << 6);
-
-        unsigned char k0 = (combined >> 16) & 0xFF;
-        unsigned char k1 = (combined >> 8) & 0xFF;
+        unsigned char k0 = keyBytes[0];
+        unsigned char k1 = keyBytes[1];
 
         unsigned short int K = ((unsigned short int)k0 << 8) | k1;
 
@@ -1795,7 +1783,7 @@ public:
         vector<unsigned char> ciphertextBytes;
 
         // Guardar C0 al inicio del ciphertext
-        //ciphertextBytes.push_back(C0);
+        // ciphertextBytes.push_back(C0);
 
         int lenMess = (int)plaintextBytes.size();
         int inicioBloque = 0;
